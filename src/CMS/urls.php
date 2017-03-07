@@ -62,7 +62,12 @@ return array(
         'regex' => '#^/(?P<id>\d+)/download$#',
         'model' => 'CMS_Views',
         'method' => 'download',
-        'http-method' => 'GET'
+        'http-method' => 'GET',
+        // Cache apram
+        'cacheable' => true,
+        'revalidate' => true,
+        'intermediate_cache' => true,
+        'max_age' => 25000
     ),
     array(
         'regex' => '#^/(?P<id>\d+)/download$#',
