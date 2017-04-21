@@ -22,22 +22,21 @@ Pluf::loadFunction('CMS_Shortcuts_GetNamedContentOr404');
 class CMS_Views
 {
 
-    public static function create ($request, $match)
+    public static function create($request, $match)
     {
         // initial content data
         $extra = array(
-                'user' => $request->user,
-                'model' => new CMS_Content()
+            'user' => $request->user,
+            'model' => new CMS_Content()
         );
-                   
+        
         // Create content and get its ID
         $form = new CMS_Form_ContentCreate($request->REQUEST, $extra);
         
         // Upload content file and extract information about it (by updating
         // content)
         $extra['model'] = $form->save();
-        $form = new CMS_Form_ContentUpdate(
-                array_merge($request->REQUEST, $request->FILES), $extra);
+        $form = new CMS_Form_ContentUpdate(array_merge($request->REQUEST, $request->FILES), $extra);
         try {
             $content = $form->save();
         } catch (Pluf_Exception $e) {
@@ -48,46 +47,46 @@ class CMS_Views
         return new Pluf_HTTP_Response_Json($content);
     }
 
-    public static function find ($request, $match)
+    public static function find($request, $match)
     {
         $content = new Pluf_Paginator(new CMS_Content());
         $content->list_filters = array(
-                'id',
-        		'name',
-                'title',
-                'file_name',
-                'mime_type'
+            'id',
+            'name',
+            'title',
+            'file_name',
+            'mime_type'
         );
         $list_display = array(
-                'title' => __('title'),
-                'file_name' => __('file_name'),
-                'mime_type' => __('mime_type'),
-                'description' => __('description')
+            'title' => __('title'),
+            'file_name' => __('file_name'),
+            'mime_type' => __('mime_type'),
+            'description' => __('description')
         );
         $search_fields = array(
-        		'name',
-                'title',
-                'file_name',
-                'mime_type',
-                'description'
+            'name',
+            'title',
+            'file_name',
+            'mime_type',
+            'description'
         );
         $sort_fields = array(
-                'id',
-        		'name',
-                'title',
-                'file_name',
-                'file_size',
-                'mime_type',
-                'downloads',
-                'creation_date',
-                'modif_dtime'
+            'id',
+            'name',
+            'title',
+            'file_name',
+            'file_size',
+            'mime_type',
+            'downloads',
+            'creation_date',
+            'modif_dtime'
         );
         $content->configure($list_display, $search_fields, $sort_fields);
         $content->setFromRequest($request);
         return new Pluf_HTTP_Response_Json($content->render_object());
     }
 
-    public static function get ($request, $match)
+    public static function get($request, $match)
     {
         // تعیین داده‌ها
         if (array_key_exists('id', $match)) {
@@ -100,21 +99,20 @@ class CMS_Views
         return new Pluf_HTTP_Response_Json($content);
     }
 
-    public static function update ($request, $match)
+    public static function update($request, $match)
     {
         // تعیین داده‌ها
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
         // اجرای درخواست
         $extra = array(
-                'model' => $content
+            'model' => $content
         );
-        $form = new CMS_Form_ContentUpdate(
-                array_merge($request->REQUEST, $request->FILES), $extra);
+        $form = new CMS_Form_ContentUpdate(array_merge($request->REQUEST, $request->FILES), $extra);
         $content = $form->save();
         return new Pluf_HTTP_Response_Json($content);
     }
 
-    public static function delete ($request, $match)
+    public static function delete($request, $match)
     {
         // تعیین داده‌ها
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
@@ -129,24 +127,22 @@ class CMS_Views
         return new Pluf_HTTP_Response_Json($content2);
     }
 
-    public static function download ($request, $match)
+    public static function download($request, $match)
     {
         // GET data
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
         // Do
         $content->downloads += 1;
         $content->update();
-        $response = new Pluf_HTTP_Response_File($content->getAbsloutPath(), 
-                $content->mime_type);
-        $response->headers['Content-Disposition'] = sprintf(
-                'attachment; filename="%s"', $content->file_name);
+        $response = new Pluf_HTTP_Response_File($content->getAbsloutPath(), $content->mime_type);
+        $response->headers['Content-Disposition'] = sprintf('attachment; filename="%s"', $content->file_name);
         return $response;
     }
 
-    public static function updateFile ($request, $match)
+    public static function updateFile($request, $match)
     {
         // GET data
-        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match[1]);
+        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
         if (array_key_exists('file', $request->FILES)) {
             // $extra = array(
             // // 'user' => $request->user,
@@ -159,8 +155,7 @@ class CMS_Views
             return CMS_Views::update($request, $match);
         } else {
             // Do
-            $myfile = fopen($content->getAbsloutPath(), "w") or
-                     die("Unable to open file!");
+            $myfile = fopen($content->getAbsloutPath(), "w") or die("Unable to open file!");
             $entityBody = file_get_contents('php://input', 'r');
             fwrite($myfile, $entityBody);
             fclose($myfile);
