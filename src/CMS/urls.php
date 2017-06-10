@@ -53,7 +53,7 @@ return array(
         'method' => 'update',
         'http-method' => 'POST',
         'precond' => array(
-            'Pluf_Precondition::memberRequired'
+            'Pluf_Precondition::ownerRequired'
         )
     ),
     
