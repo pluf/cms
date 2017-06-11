@@ -197,6 +197,21 @@ class CMS_Content extends Pluf_Model
     }
 
     /**
+     * \brief عملیاتی که قبل از پاک شدن است انجام می‌شود
+     *
+     * عملیاتی که قبل از پاک شدن است انجام می‌شود
+     * در این متد فایل مربوط به است حذف می شود. این عملیات قابل بازگشت نیست
+     */
+    function preDelete()
+    {
+        // remove related file
+        $filename = $this->file_path . '/' . $this->id;
+        if (is_file($filename)) {
+            unlink($filename);
+        }
+    }
+    
+    /**
      * مسیر کامل محتوی را تعیین می‌کند.
      *
      * @return string
