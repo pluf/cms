@@ -3,6 +3,7 @@
 	<testsuites>
 		<testsuite name="Pluf">
 			<directory>./Cms/</directory>
+			<directory>./Cms_Contetn/</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>
