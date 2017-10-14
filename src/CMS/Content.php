@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of Pluf Framework, a simple PHP Application Framework.
  * Copyright (C) 2010-2020 Phoinex Scholars Co. (http://dpq.co.ir)
@@ -164,7 +163,7 @@ class CMS_Content extends Pluf_Model
     /**
      * پیش ذخیره را انجام می‌دهد
      *
-     * @param $create حالت
+     * @param boolean $create حالت
      *            ساخت یا به روز رسانی را تعیین می‌کند
      */
     function preSave ($create = false)
