@@ -20,7 +20,8 @@
 		"pluf/core" : "^2.0.2"
 	},
 	"require-dev" : {
-		"pluf/test" : "^2.1.0"
+		"pluf/test" : "^2.1.0",
+		"pluf/user" : "^2.1.0"
 	},
 	"include-path" : [
 		"src/"

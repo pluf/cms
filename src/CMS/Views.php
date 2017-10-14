@@ -19,10 +19,23 @@
 Pluf::loadFunction('Pluf_Shortcuts_GetObjectOr404');
 Pluf::loadFunction('CMS_Shortcuts_GetNamedContentOr404');
 
+/**
+ * Content model
+ * 
+ * @author maso<mostafa.barmshory@dpq.co.ir>
+ */
 class CMS_Views
 {
 
-    public static function create($request, $match)
+    /**
+     * Creates new content
+     * 
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @throws Pluf_Exception
+     * @return Pluf_HTTP_Response_Json
+     */
+    public function create($request, $match)
     {
         // initial content data
         $extra = array(
@@ -47,7 +60,14 @@ class CMS_Views
         return new Pluf_HTTP_Response_Json($content);
     }
 
-    public static function find($request, $match)
+    /**
+     * Finds contents
+     * 
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @return Pluf_HTTP_Response_Json
+     */
+    public function find($request, $match)
     {
         $content = new Pluf_Paginator(new CMS_Content());
         $content->list_filters = array(
@@ -86,7 +106,14 @@ class CMS_Views
         return new Pluf_HTTP_Response_Json($content->render_object());
     }
 
-    public static function get($request, $match)
+    /**
+     * Gets content meta information
+     * 
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @return Pluf_HTTP_Response_Json
+     */
+    public function get($request, $match)
     {
         // تعیین داده‌ها
         if (array_key_exists('id', $match)) {
@@ -96,10 +123,17 @@ class CMS_Views
             $content = CMS_Shortcuts_GetNamedContentOr404($match['name']);
         }
         // اجرای درخواست
-        return new Pluf_HTTP_Response_Json($content);
+        return $content;
     }
 
-    public static function update($request, $match)
+    /**
+     * Update content meta information
+     * 
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @return Pluf_HTTP_Response_Json
+     */
+    public function update($request, $match)
     {
         // تعیین داده‌ها
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
@@ -109,10 +143,17 @@ class CMS_Views
         );
         $form = new CMS_Form_ContentUpdate(array_merge($request->REQUEST, $request->FILES), $extra);
         $content = $form->save();
-        return new Pluf_HTTP_Response_Json($content);
+        return $content;
     }
 
-    public static function delete($request, $match)
+    /**
+     * Deletes content
+     * 
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @return Pluf_HTTP_Response_Json
+     */
+    public function delete($request, $match)
     {
         // تعیین داده‌ها
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
@@ -124,10 +165,17 @@ class CMS_Views
         
         // TODO: فایل مربوط به کانتنت باید حذف شود
         
-        return new Pluf_HTTP_Response_Json($content2);
+        return $content2;
     }
 
-    public static function download($request, $match)
+    /**
+     * Download a content
+     * 
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @return Pluf_HTTP_Response_File
+     */
+    public function download($request, $match)
     {
         // GET data
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
@@ -139,7 +187,14 @@ class CMS_Views
         return $response;
     }
 
-    public static function updateFile($request, $match)
+    /**
+     * Upload a file as content
+     * 
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @return Pluf_HTTP_Response_Json|object
+     */
+    public function updateFile($request, $match)
     {
         // GET data
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
@@ -163,6 +218,6 @@ class CMS_Views
             // $content->file_path . '/' . $content->id);
             $content->update();
         }
-        return new Pluf_HTTP_Response_Json($content);
+        return $content;
     }
 }
