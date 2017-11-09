@@ -57,9 +57,9 @@ function CMS_Shortcuts_GetNamedContentOr404 ($name)
  *
  * این فراخوانی در فرم‌ها کاربرد دارد.
  *
- * @param unknown $name            
+ * @param string $name            
  * @throws Pluf_Exception
- * @return unknown
+ * @return string
  */
 function CMS_Shortcuts_CleanName ($name)
 {

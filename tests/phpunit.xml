@@ -4,6 +4,18 @@
 		<testsuite name="Pluf">
 			<directory>./Cms/</directory>
 			<directory>./Cms_Contetn/</directory>
+			<directory>./Cms_REST/</directory>
+			<directory>./Cms_Monitor/</directory>
 		</testsuite>
 	</testsuites>
+
+	<!-- Code coverage -->
+	<filter>
+		<whitelist addUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">../src</directory>
+		</whitelist>
+	</filter>
+	<logging>
+		<log type="coverage-clover" target="./clover.xml" />
+	</logging>
 </phpunit>
