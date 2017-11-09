@@ -11,7 +11,7 @@ mysql:
   
 before_install:
   - sudo apt-get update > /dev/null
- 
+  
 install:
   # Install composer packages, will also trigger dump-autoload
   - travis_retry composer install --no-interaction
@@ -23,6 +23,7 @@ install:
 script:
   - cd tests
   - php run.php
+  - cd ..
 
 after_success:
 # Submit coverage report to Coveralls servers, see .coveralls.yml
