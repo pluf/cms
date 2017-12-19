@@ -20,7 +20,7 @@ return array(
         'CMS_Content' => array(
                 'relate_to' => array(
                         'Pluf_Tenant',
-                        'Pluf_User'
+                        'User'
                 )
         )
 );
