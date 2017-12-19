@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true">
+	<testsuites>
+		<testsuite name="CMS">
+			<directory>tests/Cms/</directory>
+			<directory>tests/Cms_Content/</directory>
+		</testsuite>
+		<testsuite name="CMS REST">
+			<directory>tests/Cms_REST/</directory>
+		</testsuite>
+		<testsuite name="CMS Monitor">
+			<directory>tests/Cms_Monitor/</directory>
+		</testsuite>
+	</testsuites>
+
+	<!-- Code coverage -->
+	<filter>
+		<whitelist addUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">src</directory>
+		</whitelist>
+	</filter>
+	<logging>
+        <log type="coverage-clover" target="build/logs/clover.xml"/>
+	</logging>
+</phpunit>

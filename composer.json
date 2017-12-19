@@ -17,11 +17,11 @@
 	],
 	"minimum-stability" : "stable",
 	"require" : {
-		"pluf/core" : "^2.0.2"
+		"pluf/core" : "^3.0.0"
 	},
 	"require-dev" : {
-		"pluf/test" : "^2.1.0",
-		"pluf/user" : "^2.1.0"
+		"pluf/test" : "^3.0.0",
+		"pluf/user" : "^3.0.0"
 	},
 	"include-path" : [
 		"src/"
