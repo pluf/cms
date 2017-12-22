@@ -75,7 +75,7 @@ return array(
         'method' => 'updateFile',
         'http-method' => 'POST',
         'precond' => array(
-            'Pluf_Precondition::memberRequired'
+            'User_Precondition::loginRequired'
         )
     ),
         
