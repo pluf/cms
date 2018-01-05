@@ -68,7 +68,7 @@ return array(
     
     // Download
     array(
-        'regex' => '#^/(?P<id>\d+)/download$#',
+        'regex' => '#^/(?P<modelId>\d+)/download$#',
         'model' => 'CMS_Views',
         'method' => 'download',
         'http-method' => 'GET',
@@ -79,7 +79,7 @@ return array(
         'max_age' => 25000
     ),
     array(
-        'regex' => '#^/(?P<id>\d+)/download$#',
+        'regex' => '#^/(?P<modelId>\d+)/download$#',
         'model' => 'CMS_Views',
         'method' => 'updateFile',
         'http-method' => 'POST',

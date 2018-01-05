@@ -81,6 +81,26 @@ class CMS_Views
     }
 
     /**
+     * Update content meta information
+     *
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @return Pluf_HTTP_Response_Json
+     */
+    public function update($request, $match)
+    {
+        // تعیین داده‌ها
+        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['modelId']);
+        // اجرای درخواست
+        $extra = array(
+            'model' => $content
+        );
+        $form = new CMS_Form_ContentUpdate(array_merge($request->REQUEST, $request->FILES), $extra);
+        $content = $form->save();
+        return $content;
+    }
+
+    /**
      * Finds contents
      *
      * @param Pluf_HTTP_Request $request
@@ -136,10 +156,9 @@ class CMS_Views
     public function download($request, $match)
     {
         // GET data
-        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
+        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['modelId']);
         // Do
         $content->downloads += 1;
-        echo $content->mime_type;
         $content->update();
         $response = new Pluf_HTTP_Response_File($content->getAbsloutPath(), $content->mime_type);
         $response->headers['Content-Disposition'] = sprintf('attachment; filename="%s"', $content->file_name);
@@ -156,7 +175,7 @@ class CMS_Views
     public function updateFile($request, $match)
     {
         // GET data
-        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
+        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['modelId']);
         if (array_key_exists('file', $request->FILES)) {
             // $extra = array(
             // // 'user' => $request->user,
@@ -166,7 +185,7 @@ class CMS_Views
             // array_merge($request->REQUEST, $request->FILES), $extra);
             // $content = $form->update();
             // // return new Pluf_HTTP_Response_Json($content);
-            return CMS_Views::update($request, $match);
+            return $this->update($request, $match);
         } else {
             // Do
             $myfile = fopen($content->getAbsloutPath(), "w") or die("Unable to open file!");

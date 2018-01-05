@@ -74,7 +74,7 @@ class CMS_Content extends Pluf_Model
             ),
             'mime_type' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
-                'blank' => false,
+                'blank' => true,
                 'size' => 64,
                 'default' => 'application/octet-stream',
                 'verbose' => __('mime type'),
@@ -177,7 +177,7 @@ class CMS_Content extends Pluf_Model
         }
         // mime type (based on file name)
         $mime_type = $this->mime_type;
-        if(!isset($mime_type)){
+        if(!isset($mime_type) || $mime_type === 'application/octet-stream'){
             $fileInfo = Pluf_FileUtil::getMimeType($this->file_name);
             $this->mime_type = $fileInfo[0];
         }
