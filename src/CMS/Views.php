@@ -106,67 +106,6 @@ class CMS_Views
         return new Pluf_HTTP_Response_Json($content->render_object());
     }
 
-    /**
-     * Gets content meta information
-     * 
-     * @param Pluf_HTTP_Request $request
-     * @param array $match
-     * @return Pluf_HTTP_Response_Json
-     */
-    public function get($request, $match)
-    {
-        // تعیین داده‌ها
-        if (array_key_exists('id', $match)) {
-            $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
-            // XXX: maso, 1395: محتوی در ملک باشد
-        } else {
-            $content = CMS_Shortcuts_GetNamedContentOr404($match['name']);
-        }
-        // اجرای درخواست
-        return $content;
-    }
-
-    /**
-     * Update content meta information
-     * 
-     * @param Pluf_HTTP_Request $request
-     * @param array $match
-     * @return Pluf_HTTP_Response_Json
-     */
-    public function update($request, $match)
-    {
-        // تعیین داده‌ها
-        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
-        // اجرای درخواست
-        $extra = array(
-            'model' => $content
-        );
-        $form = new CMS_Form_ContentUpdate(array_merge($request->REQUEST, $request->FILES), $extra);
-        $content = $form->save();
-        return $content;
-    }
-
-    /**
-     * Deletes content
-     * 
-     * @param Pluf_HTTP_Request $request
-     * @param array $match
-     * @return Pluf_HTTP_Response_Json
-     */
-    public function delete($request, $match)
-    {
-        // تعیین داده‌ها
-        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
-        // دسترسی
-        // CMS_Precondition::userCanDeleteContent($request, $content);
-        // اجرا
-        $content2 = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $content->id);
-        $content->delete();
-        
-        // TODO: فایل مربوط به کانتنت باید حذف شود
-        
-        return $content2;
-    }
 
     /**
      * Download a content

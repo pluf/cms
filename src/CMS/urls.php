@@ -33,27 +33,36 @@ return array(
         'http-method' => 'GET'
     ),
     array(
-        'regex' => '#^/(?P<id>\d+)$#',
-        'model' => 'CMS_Views',
-        'method' => 'get',
-        'http-method' => 'GET'
-    ),
-    array(
-        'regex' => '#^/(?P<id>\d+)$#',
-        'model' => 'CMS_Views',
-        'method' => 'delete',
-        'http-method' => 'DELETE',
-        'precond' => array(
-            'User_Precondition::ownerRequired'
+        'regex' => '#^/(?P<modelId>\d+)$#',
+        'model' => 'Pluf_Views',
+        'method' => 'getObject',
+        'http-method' => 'GET',
+        'params' => array(
+            'model' => 'CMS_Content'
         )
     ),
     array(
-        'regex' => '#^/(?P<id>\d+)$#',
-        'model' => 'CMS_Views',
-        'method' => 'update',
+        'regex' => '#^/(?P<modelId>\d+)$#',
+        'model' => 'Pluf_Views',
+        'method' => 'deleteObject',
+        'http-method' => 'DELETE',
+        'precond' => array(
+            'User_Precondition::ownerRequired'
+        ),
+        'params' => array(
+            'model' => 'CMS_Content'
+        )
+    ),
+    array(
+        'regex' => '#^/(?P<modelId>\d+)$#',
+        'model' => 'Pluf_Views',
+        'method' => 'updateObject',
         'http-method' => 'POST',
         'precond' => array(
             'User_Precondition::ownerRequired'
+        ),
+        'params' => array(
+            'model' => 'CMS_Content'
         )
     ),
     
