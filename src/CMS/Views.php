@@ -21,7 +21,7 @@ Pluf::loadFunction('CMS_Shortcuts_GetNamedContentOr404');
 
 /**
  * Content model
- * 
+ *
  * @author maso<mostafa.barmshory@dpq.co.ir>
  */
 class CMS_Views
@@ -29,7 +29,7 @@ class CMS_Views
 
     /**
      * Creates new content
-     * 
+     *
      * @param Pluf_HTTP_Request $request
      * @param array $match
      * @throws Pluf_Exception
@@ -57,12 +57,32 @@ class CMS_Views
             $content->delete();
             throw $e;
         }
-        return new Pluf_HTTP_Response_Json($content);
+        return $content;
+    }
+
+    /**
+     * Gets content meta information
+     *
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @return Pluf_HTTP_Response_Json
+     */
+    public function get($request, $match)
+    {
+        // تعیین داده‌ها
+        if (array_key_exists('id', $match)) {
+            $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
+            // XXX: maso, 1395: محتوی در ملک باشد
+        } else {
+            $content = CMS_Shortcuts_GetNamedContentOr404($match['name']);
+        }
+        // اجرای درخواست
+        return $content;
     }
 
     /**
      * Finds contents
-     * 
+     *
      * @param Pluf_HTTP_Request $request
      * @param array $match
      * @return Pluf_HTTP_Response_Json
@@ -106,10 +126,9 @@ class CMS_Views
         return new Pluf_HTTP_Response_Json($content->render_object());
     }
 
-
     /**
      * Download a content
-     * 
+     *
      * @param Pluf_HTTP_Request $request
      * @param array $match
      * @return Pluf_HTTP_Response_File
@@ -129,7 +148,7 @@ class CMS_Views
 
     /**
      * Upload a file as content
-     * 
+     *
      * @param Pluf_HTTP_Request $request
      * @param array $match
      * @return Pluf_HTTP_Response_Json|object
