@@ -79,7 +79,7 @@ class CMS_Content extends Pluf_Model
                 'default' => 'application/octet-stream',
                 'verbose' => __('mime type'),
                 'help_text' => __('content mime type'),
-                'editable' => false
+                'editable' => true
             ),
             'file_path' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
@@ -176,8 +176,11 @@ class CMS_Content extends Pluf_Model
             $this->file_size = 0;
         }
         // mime type (based on file name)
-        $fileInfo = Pluf_FileUtil::getMimeType($this->file_name);
-        $this->mime_type = $fileInfo[0];
+        $mime_type = $this->mime_type;
+        if(!isset($mime_type)){
+            $fileInfo = Pluf_FileUtil::getMimeType($this->file_name);
+            $this->mime_type = $fileInfo[0];
+        }
     }
 
     /**

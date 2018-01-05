@@ -181,6 +181,7 @@ class CMS_Views
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
         // Do
         $content->downloads += 1;
+        echo $content->mime_type;
         $content->update();
         $response = new Pluf_HTTP_Response_File($content->getAbsloutPath(), $content->mime_type);
         $response->headers['Content-Disposition'] = sprintf('attachment; filename="%s"', $content->file_name);
