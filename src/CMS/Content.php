@@ -19,9 +19,10 @@
  */
 
 /**
- * ساختار داده‌ای یک دستگاه را تعیین می‌کند.
+ * Content data model
  *
  * @author hadi <mohammad.hadi.mansouri@dpq.co.ir>
+ * @author maso <mostafa.barmshory@dpq.co.ir>
  *        
  */
 class CMS_Content extends Pluf_Model
@@ -40,8 +41,8 @@ class CMS_Content extends Pluf_Model
             'id' => array(
                 'type' => 'Pluf_DB_Field_Sequence',
                 'blank' => false,
-                'verbose' => __('first name'),
-                'help_text' => __('id'),
+                'verbose' => 'first name',
+                'help_text' => 'id',
                 'editable' => false
             ),
             // فیلدها
@@ -50,8 +51,8 @@ class CMS_Content extends Pluf_Model
                 'blank' => true,
                 'size' => 64,
                 'unique' => true,
-                'verbose' => __('name'),
-                'help_text' => __('content name'),
+                'verbose' => 'name',
+                'help_text' => 'content name',
                 'editable' => true
             ),
             'title' => array(
@@ -59,8 +60,8 @@ class CMS_Content extends Pluf_Model
                 'blank' => true,
                 'size' => 250,
                 'default' => 'no title',
-                'verbose' => __('title'),
-                'help_text' => __('content title'),
+                'verbose' => 'title',
+                'help_text' => 'content title',
                 'editable' => true
             ),
             'description' => array(
@@ -68,8 +69,8 @@ class CMS_Content extends Pluf_Model
                 'blank' => true,
                 'size' => 250,
                 'default' => 'auto created content',
-                'verbose' => __('description'),
-                'help_text' => __('content description'),
+                'verbose' => 'description',
+                'help_text' => 'content description',
                 'editable' => true
             ),
             'mime_type' => array(
@@ -77,16 +78,25 @@ class CMS_Content extends Pluf_Model
                 'blank' => true,
                 'size' => 64,
                 'default' => 'application/octet-stream',
-                'verbose' => __('mime type'),
-                'help_text' => __('content mime type'),
+                'verbose' => 'mime type',
+                'help_text' => 'content mime type',
+                'editable' => true
+            ),
+            'media_type' => array(
+                'type' => 'Pluf_DB_Field_Varchar',
+                'blank' => true,
+                'size' => 64,
+                'default' => 'application/octet-stream',
+                'verbose' => 'Media type',
+                'help_text' => 'This types allow you to category contents',
                 'editable' => true
             ),
             'file_path' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
                 'blank' => false,
                 'size' => 250,
-                'verbose' => __('file path'),
-                'help_text' => __('content file path'),
+                'verbose' => 'File path',
+                'help_text' => 'Content file path',
                 'editable' => false,
                 'readable' => false
             ),
@@ -95,16 +105,16 @@ class CMS_Content extends Pluf_Model
                 'blank' => false,
                 'size' => 250,
                 'default' => 'unknown',
-                'verbose' => __('file name'),
-                'help_text' => __('content file name'),
+                'verbose' => 'file name',
+                'help_text' => 'Content file name',
                 'editable' => false
             ),
             'file_size' => array(
                 'type' => 'Pluf_DB_Field_Integer',
                 'blank' => false,
                 'default' => 'no title',
-                'verbose' => __('file size'),
-                'help_text' => __('content file size'),
+                'verbose' => 'file size',
+                'help_text' => 'content file size',
                 'editable' => false
             ),
             'downloads' => array(
@@ -112,22 +122,22 @@ class CMS_Content extends Pluf_Model
                 'blank' => false,
                 'default' => 0,
                 'default' => 'no title',
-                'verbose' => __('downloads'),
-                'help_text' => __('content downloads number'),
+                'verbose' => 'downloads',
+                'help_text' => 'content downloads number',
                 'editable' => false
             ),
             'creation_dtime' => array(
                 'type' => 'Pluf_DB_Field_Datetime',
                 'blank' => true,
-                'verbose' => __('creation'),
-                'help_text' => __('content creation time'),
+                'verbose' => 'creation',
+                'help_text' => 'content creation time',
                 'editable' => false
             ),
             'modif_dtime' => array(
                 'type' => 'Pluf_DB_Field_Datetime',
                 'blank' => true,
-                'verbose' => __('modification'),
-                'help_text' => __('content modification time'),
+                'verbose' => 'modification',
+                'help_text' => 'content modification time',
                 'editable' => false
             )
         );

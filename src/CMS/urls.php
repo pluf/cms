@@ -87,6 +87,20 @@ return array(
             'User_Precondition::loginRequired'
         )
     ),
+    
+    // thumbnail
+    // TODO: maso, 2018: implement thumbnail generator
+    array(
+        'regex' => '#^/(?P<modelId>\d+)/thumbnail$#',
+        'model' => 'CMS_Views',
+        'method' => 'download',
+        'http-method' => 'GET',
+        // Cache apram
+        'cacheable' => true,
+        'revalidate' => true,
+        'intermediate_cache' => true,
+        'max_age' => 25000
+    ),
         
     /*
      * Named content
