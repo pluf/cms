@@ -72,7 +72,6 @@ class CMS_Views
         // تعیین داده‌ها
         if (array_key_exists('id', $match)) {
             $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['id']);
-            // XXX: maso, 1395: محتوی در ملک باشد
         } else {
             $content = CMS_Shortcuts_GetNamedContentOr404($match['name']);
         }
