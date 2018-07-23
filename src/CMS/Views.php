@@ -108,41 +108,11 @@ class CMS_Views
      */
     public function find($request, $match)
     {
-        $content = new Pluf_Paginator(new CMS_Content());
-        $content->list_filters = array(
-            'id',
-            'name',
-            'title',
-            'file_name',
-            'mime_type'
-        );
-        $list_display = array(
-            'title' => __('title'),
-            'file_name' => __('file_name'),
-            'mime_type' => __('mime_type'),
-            'description' => __('description')
-        );
-        $search_fields = array(
-            'name',
-            'title',
-            'file_name',
-            'mime_type',
-            'description'
-        );
-        $sort_fields = array(
-            'id',
-            'name',
-            'title',
-            'file_name',
-            'file_size',
-            'mime_type',
-            'downloads',
-            'creation_date',
-            'modif_dtime'
-        );
-        $content->configure($list_display, $search_fields, $sort_fields);
-        $content->setFromRequest($request);
-        return new Pluf_HTTP_Response_Json($content->render_object());
+        $builder = new Pluf_Paginator_Builder(new CMS_Content());
+        return $builder
+            ->setRequest($request)
+            ->build()
+            ->render_object();
     }
 
     /**
