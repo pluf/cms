@@ -167,4 +167,16 @@ class CMS_Views
         }
         return $content;
     }
+    
+    /**
+     * Upload a file as thumbnail
+     *
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @return Pluf_HTTP_Response_Json|object
+     */
+    public function updateThumbnail($request, $match)
+    {
+        throw new Pluf_Exception('Not implemented yet!');
+    }
 }
