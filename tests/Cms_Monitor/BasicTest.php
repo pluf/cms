@@ -27,35 +27,51 @@ require_once 'Pluf.php';
 class User_Monitor_BasicsTest extends TestCase
 {
     
+    private static $client = null;
+    
     /**
      * @beforeClass
      */
     public static function createDataBase()
     {
-        Pluf::start(__DIR__.'/../conf/mysql.monitor.conf.php');
-        $m = new Pluf_Migration(array(
-            'Pluf',
-            'User',
-            'Group',
-            'Role',
-            'CMS'
-        ));
+        Pluf::start(__DIR__.'/../conf/config.php');
+        $m = new Pluf_Migration(Pluf::f('installed_apps'));
         $m->install();
         
-        $user = new User();
+        // Test user
+        $user = new User_Account();
         $user->login = 'test';
-        $user->first_name = 'test';
-        $user->last_name = 'test';
-        $user->email = 'toto@example.com';
-        $user->setPassword('test');
-        $user->active = true;
-        $user->administrator = true;
+        $user->is_active = true;
         if (true !== $user->create()) {
             throw new Exception();
         }
+        // Credential of user
+        $credit = new User_Credential();
+        $credit->setFromFormData(array(
+            'account_id' => $user->id
+        ));
+        $credit->setPassword('test');
+        if (true !== $credit->create()) {
+            throw new Exception();
+        }
         
-        $role = Role::getFromString('Pluf.owner');
-        $user->setAssoc($role);
+        $per = User_Role::getFromString('Pluf.owner');
+        $user->setAssoc($per);
+        
+        self::$client = new Test_Client(array(
+            array(
+                'app' => 'User',
+                'regex' => '#^/api/v2/user#',
+                'base' => '',
+                'sub' => include 'User/urls-v2.php'
+            ),
+            array(
+                'regex' => '#^/monitor/count$#',
+                'model' => 'CMS_Monitor',
+                'method' => 'count',
+                'http-method' => 'GET'
+            )
+        ));
     }
     
     /**
@@ -63,13 +79,7 @@ class User_Monitor_BasicsTest extends TestCase
      */
     public static function removeDatabses()
     {
-        $m = new Pluf_Migration(array(
-            'Pluf',
-            'User',
-            'Group',
-            'Role',
-            'CMS'
-        ));
+        $m = new Pluf_Migration(Pluf::f('installed_apps'));
         $m->unInstall();
     }
     
@@ -79,27 +89,12 @@ class User_Monitor_BasicsTest extends TestCase
     public function getCountentCount()
     {
         
-        $client = new Test_Client(array(
-            array(
-                'app' => 'User',
-                'regex' => '#^/api/user#',
-                'base' => '',
-                'sub' => include 'User/urls.php'
-            ),
-            array(
-                'regex' => '#^/monitor/count$#',
-                'model' => 'CMS_Monitor',
-                'method' => 'count',
-                'http-method' => 'GET'
-            )
-        ));
-        
         // Change detail
-        $user = new User();
+        $user = new User_Account();
         $user = $user->getUser('test');
         
         // Login
-        $response = $client->post('/api/user/login', array(
+        $response = self::$client->post('/api/v2/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -107,7 +102,7 @@ class User_Monitor_BasicsTest extends TestCase
         $this->assertEquals($response->status_code, 200);
         
         // count
-        $response = $client->get('/monitor/count');
+        $response = self::$client->get('/monitor/count');
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
     }
