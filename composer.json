@@ -21,7 +21,8 @@
 	},
 	"require-dev" : {
 		"pluf/test" : "^3.0.0",
-		"pluf/user" : "^3.0.0"
+		"pluf/user" : "^3.0.0",
+		"phayes/geophp" : "^1.2"
 	},
 	"include-path" : [
 		"src/"
