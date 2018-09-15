@@ -81,7 +81,8 @@ class CMS_Form_ContentUpdate extends Pluf_Form_Model
                 $model->mime_type = $mimeType;
             }
             if(!array_key_exists('media_type', $this->data)){
-                $model->media_type = $mimeType;
+                $mediaType = substr($mimeType, 0, strpos($mimeType, '/'));
+                $model->media_type = $mediaType;
             }
         }
         if ($commit) {
