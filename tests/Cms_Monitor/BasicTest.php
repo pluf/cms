@@ -55,7 +55,7 @@ class User_Monitor_BasicsTest extends TestCase
             throw new Exception();
         }
         
-        $per = User_Role::getFromString('Pluf.owner');
+        $per = User_Role::getFromString('tenant.owner');
         $user->setAssoc($per);
         
         self::$client = new Test_Client(array(
