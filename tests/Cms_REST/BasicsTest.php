@@ -32,30 +32,29 @@ class Cms_REST_BasicsTest extends TestCase
      */
     public static function createDataBase()
     {
-        Pluf::start(__DIR__.'/../conf/mysql.rest.conf.php');
-        $m = new Pluf_Migration(array(
-            'Pluf',
-            'User',
-            'Group',
-            'Role',
-            'CMS'
-        ));
+        Pluf::start(__DIR__.'/../conf/config.php');
+        $m = new Pluf_Migration(Pluf::f('installed_apps'));
         $m->install();
         
-        $user = new User();
+        // Test user
+        $user = new User_Account();
         $user->login = 'test';
-        $user->first_name = 'test';
-        $user->last_name = 'test';
-        $user->email = 'toto@example.com';
-        $user->setPassword('test');
-        $user->active = true;
-        $user->administrator = true;
+        $user->is_active = true;
         if (true !== $user->create()) {
             throw new Exception();
         }
+        // Credential of user
+        $credit = new User_Credential();
+        $credit->setFromFormData(array(
+            'account_id' => $user->id
+        ));
+        $credit->setPassword('test');
+        if (true !== $credit->create()) {
+            throw new Exception();
+        }
         
-        $role = Role::getFromString('Pluf.owner');
-        $user->setAssoc($role);
+        $per = User_Role::getFromString('tenant.owner');
+        $user->setAssoc($per);
     }
 
     /**
@@ -63,13 +62,7 @@ class Cms_REST_BasicsTest extends TestCase
      */
     public static function removeDatabses()
     {
-        $m = new Pluf_Migration(array(
-            'Pluf',
-            'User',
-            'Group',
-            'Role',
-            'CMS'
-        ));
+        $m = new Pluf_Migration(Pluf::f('installed_apps'));
         $m->unInstall();
     }
 
@@ -81,12 +74,12 @@ class Cms_REST_BasicsTest extends TestCase
         $client = new Test_Client(array(
             array(
                 'app' => 'Cms',
-                'regex' => '#^/api/cms#',
+                'regex' => '#^/api/v2/cms#',
                 'base' => '',
-                'sub' => include 'CMS/urls.php'
+                'sub' => include 'CMS/urls-v2.php'
             )
         ));
-        $response = $client->get('/api/cms/find');
+        $response = $client->get('/api/v2/cms/contents');
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
     }
@@ -99,20 +92,20 @@ class Cms_REST_BasicsTest extends TestCase
         $client = new Test_Client(array(
             array(
                 'app' => 'Cms',
-                'regex' => '#^/api/cms#',
+                'regex' => '#^/api/v2/cms#',
                 'base' => '',
-                'sub' => include 'CMS/urls.php'
+                'sub' => include 'CMS/urls-v2.php'
             ),
             array(
                 'app' => 'User',
-                'regex' => '#^/api/user#',
+                'regex' => '#^/api/v2/user#',
                 'base' => '',
-                'sub' => include 'User/urls.php'
+                'sub' => include 'User/urls-v2.php'
             )
         ));
         
         // login
-        $response = $client->post('/api/user/login', array(
+        $response = $client->post('/api/v2/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -126,7 +119,7 @@ class Cms_REST_BasicsTest extends TestCase
             'description' => 'This is a simple content is used int test process',
             'mime_type' => 'application/test'
         );
-        $response = $client->post('/api/cms/new', $form);
+        $response = $client->post('/api/v2/cms/contents', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
         
@@ -136,19 +129,19 @@ class Cms_REST_BasicsTest extends TestCase
         $content->mime_type = 'application/test';
         $content->create();
         
-        $response = $client->get('/api/cms/' . $content->id);
+        $response = $client->get('/api/v2/cms/contents/' . $content->id);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
         
         // Update by id
-        $response = $client->post('/api/cms/' . $content->id, array(
+        $response = $client->post('/api/v2/cms/contents/' . $content->id, array(
             'title' => 'new title'
         ));
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
         
         // delete by id
-        $response = $client->delete('/api/cms/' . $content->id);
+        $response = $client->delete('/api/v2/cms/contents/' . $content->id);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
     }

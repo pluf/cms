@@ -72,6 +72,18 @@ class CMS_Form_ContentUpdate extends Pluf_Form_Model
             // Extract information of file
             $myFile = $this->data['file'];
             $model->file_name = $myFile['name'];
+            // set mime type if not defined
+            $mimeType = Pluf_FileUtil::getMimeType($model->file_name);
+            if(is_array($mimeType)){
+                $mimeType = $mimeType[0];
+            }
+            if(!array_key_exists('mime_type', $this->data)){
+                $model->mime_type = $mimeType;
+            }
+            if(!array_key_exists('media_type', $this->data)){
+                $mediaType = substr($mimeType, 0, strpos($mimeType, '/'));
+                $model->media_type = $mediaType;
+            }
         }
         if ($commit) {
             $model->update();

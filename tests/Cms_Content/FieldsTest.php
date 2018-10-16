@@ -33,14 +33,8 @@ class Cms_Content_FieldsTest extends TestCase
      */
     public static function createDataBase()
     {
-        Pluf::start(__DIR__ . '/../conf/mysql.rest.conf.php');
-        $m = new Pluf_Migration(array(
-            'Pluf',
-            'User',
-            'Group',
-            'Role',
-            'CMS'
-        ));
+        Pluf::start(__DIR__ . '/../conf/config.php');
+        $m = new Pluf_Migration(Pluf::f('installed_apps'));
         $m->install();
     }
 
@@ -49,13 +43,7 @@ class Cms_Content_FieldsTest extends TestCase
      */
     public static function removeDatabses()
     {
-        $m = new Pluf_Migration(array(
-            'Pluf',
-            'User',
-            'Group',
-            'Role',
-            'CMS'
-        ));
+        $m = new Pluf_Migration(Pluf::f('installed_apps'));
         $m->unInstall();
     }
 

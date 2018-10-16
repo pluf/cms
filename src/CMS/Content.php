@@ -35,7 +35,7 @@ class CMS_Content extends Pluf_Model
      */
     function init()
     {
-        $this->_a['table'] = 'cms_content';
+        $this->_a['table'] = 'cms_contents';
         $this->_a['cols'] = array(
             // شناسه‌ها
             'id' => array(
