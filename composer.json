@@ -17,11 +17,12 @@
 	],
 	"minimum-stability" : "stable",
 	"require" : {
-		"pluf/core" : "^3.0.0"
+		"pluf/core" : "^4.0.0"
 	},
 	"require-dev" : {
-		"pluf/test" : "^3.0.0",
-		"pluf/user" : "^3.0.0"
+		"pluf/test" : "^4.0.0",
+		"pluf/user" : "^4.0.0",
+		"phayes/geophp" : "^1.2"
 	},
 	"include-path" : [
 		"src/"

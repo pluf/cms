@@ -33,7 +33,7 @@ class CmsContentCrudTest extends TestCase
      */
     public function setUp ()
     {
-        Pluf::start(__DIR__. '/../conf/mysql.conf.php');
+        Pluf::start(__DIR__. '/../conf/config.php');
     }
 
     /**
