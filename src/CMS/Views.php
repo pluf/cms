@@ -125,7 +125,11 @@ class CMS_Views
     public function download($request, $match)
     {
         // GET data
-        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['modelId']);
+        if (array_key_exists('modelId', $match)) {
+            $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['modelId']);
+        } else {
+            $content = CMS_Shortcuts_GetNamedContentOr404($match['name']);
+        }
         // Do
         $content->downloads += 1;
         $content->update();

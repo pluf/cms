@@ -92,6 +92,17 @@ return array(
             'User_Precondition::loginRequired'
         )
     ),
+    array( // Read
+        'regex' => '#^/contents/(?P<name>[^/]+)/content$#',
+        'model' => 'CMS_Views',
+        'method' => 'download',
+        'http-method' => 'GET',
+        // Cache apram
+        'cacheable' => true,
+        'revalidate' => true,
+        'intermediate_cache' => true,
+        'max_age' => 25000
+    ),
     
     /*
      * Thumbnail of content
