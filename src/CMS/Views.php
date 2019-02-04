@@ -111,8 +111,7 @@ class CMS_Views
         $builder = new Pluf_Paginator_Builder(new CMS_Content());
         return $builder
             ->setRequest($request)
-            ->build()
-            ->render_object();
+            ->build();
     }
 
     /**
