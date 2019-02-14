@@ -17,6 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 return array(
+    // ************************************************************* Schema
+    array(
+        'regex' => '#^/contents/schema$#',
+        'model' => 'Pluf_Views',
+        'method' => 'getSchema',
+        'http-method' => 'GET',
+        'params' => array(
+            'model' => 'CMS_Content'
+        )
+    ),
     /*
      * Content
      */
@@ -128,12 +138,12 @@ return array(
             'User_Precondition::loginRequired'
         )
     ),
-    
+
     array( // Read (by name)
         'regex' => '#^/contents/(?P<name>.+)$#',
         'model' => 'CMS_Views',
         'method' => 'get',
         'http-method' => 'GET'
-    ),
+    )
 );
 
