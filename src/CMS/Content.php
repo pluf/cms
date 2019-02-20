@@ -37,54 +37,44 @@ class CMS_Content extends Pluf_Model
     {
         $this->_a['table'] = 'cms_contents';
         $this->_a['cols'] = array(
-            // شناسه‌ها
+            // Identifier
             'id' => array(
                 'type' => 'Pluf_DB_Field_Sequence',
-                'blank' => false,
-                'verbose' => 'first name',
-                'help_text' => 'id',
+                'is_null' => false,
                 'editable' => false
             ),
-            // فیلدها
+            // Fields
             'name' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
-                'blank' => true,
+                'is_null' => false,
                 'size' => 64,
                 'unique' => true,
-                'verbose' => 'name',
-                'help_text' => 'content name',
                 'editable' => true
             ),
             'title' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
-                'blank' => true,
+                'is_null' => true,
                 'size' => 250,
-                'default' => 'no title',
-                'verbose' => 'title',
-                'help_text' => 'content title',
+                'default' => '',
                 'editable' => true
             ),
             'description' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
-                'blank' => true,
+                'is_null' => true,
                 'size' => 2048,
                 'default' => 'auto created content',
-                'verbose' => 'description',
-                'help_text' => 'content description',
                 'editable' => true
             ),
             'mime_type' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
-                'blank' => true,
+                'is_null' => true,
                 'size' => 64,
                 'default' => 'application/octet-stream',
-                'verbose' => 'mime type',
-                'help_text' => 'content mime type',
                 'editable' => true
             ),
             'media_type' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
-                'blank' => true,
+                'is_null' => true,
                 'size' => 64,
                 'default' => 'application/octet-stream',
                 'verbose' => 'Media type',
@@ -93,7 +83,7 @@ class CMS_Content extends Pluf_Model
             ),
             'file_path' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
-                'blank' => false,
+                'is_null' => false,
                 'size' => 250,
                 'verbose' => 'File path',
                 'help_text' => 'Content file path',
@@ -102,7 +92,7 @@ class CMS_Content extends Pluf_Model
             ),
             'file_name' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
-                'blank' => false,
+                'is_null' => false,
                 'size' => 250,
                 'default' => 'unknown',
                 'verbose' => 'file name',
@@ -111,7 +101,7 @@ class CMS_Content extends Pluf_Model
             ),
             'file_size' => array(
                 'type' => 'Pluf_DB_Field_Integer',
-                'blank' => false,
+                'is_null' => false,
                 'default' => 'no title',
                 'verbose' => 'file size',
                 'help_text' => 'content file size',
@@ -119,11 +109,38 @@ class CMS_Content extends Pluf_Model
             ),
             'downloads' => array(
                 'type' => 'Pluf_DB_Field_Integer',
-                'blank' => false,
+                'is_null' => false,
                 'default' => 0,
-                'default' => 'no title',
-                'verbose' => 'downloads',
                 'help_text' => 'content downloads number',
+                'editable' => false
+            ),
+            'status' => array(
+                'type' => 'Pluf_DB_Field_Varchar',
+                'is_null' => true,
+                'size' => 64,
+                'default' => 'published',
+                'editable' => false
+            ),
+            'password' => array(
+                'type' => 'Pluf_DB_Field_Password',
+                'is_null' => true,
+                'size' => 150,
+                'help_text' => __('Format: [algo]:[salt]:[hash]'),
+                'editable' => false,
+                'readable' => false
+            ),
+            'comment_status' => array(
+                'type' => 'Pluf_DB_Field_Varchar',
+                'is_null' => true,
+                'size' => 64,
+                'default' => NULL,
+                'editable' => false
+            ),
+            'comment_count' => array(
+                'type' => 'Pluf_DB_Field_Integer',
+                'is_null' => false,
+                'default' => 0,
+                'help_text' => 'number of comments on the content',
                 'editable' => false
             ),
             'creation_dtime' => array(
@@ -139,20 +156,34 @@ class CMS_Content extends Pluf_Model
                 'verbose' => 'modification',
                 'help_text' => 'content modification time',
                 'editable' => false
-            )
+            ),
+            /*
+             * Foreign keys
+             */
+            'author_id' => array(
+                'type' => 'Pluf_DB_Field_Foreignkey',
+                'model' => 'User_Account',
+                'is_null' => false,
+                'name' => 'author',
+                'relate_name' => 'cms_contents',
+                'graphql_name' => 'author',
+                'editable' => false
+            ),
+            'parent_id' => array(
+                'type' => 'Pluf_DB_Field_Foreignkey',
+                'model' => 'CMS_Content',
+                'is_null' => true,
+                'name' => 'parent',
+                'graphql_name' => 'parent',
+                'relate_name' => 'children',
+                'editable' => true,
+                'readable' => true
+            ),
         );
-        
+
         $this->_a['idx'] = array(
-        // @Note: hadi - 1396-10: when define an attribute as 'unique => true', pluf automatically
-        // create an unique index for it (for example 'name' field here). So following codes are extra.
-//             'content_idx' => array(
-//                 'col' => 'name',
-//                 'type' => 'unique', // normal, unique, fulltext, spatial
-//                 'index_type' => '', // hash, btree
-//                 'index_option' => '',
-//                 'algorithm_option' => '',
-//                 'lock_option' => ''
-//             ),
+            // @Note: hadi - 1396-10: when define an attribute as 'unique => true', pluf automatically
+            // create an unique index for it (for example 'name' field here).
             'content_mime_filter_idx' => array(
                 'col' => 'mime_type',
                 'type' => 'normal', // normal, unique, fulltext, spatial
@@ -187,7 +218,7 @@ class CMS_Content extends Pluf_Model
         }
         // mime type (based on file name)
         $mime_type = $this->mime_type;
-        if(!isset($mime_type) || $mime_type === 'application/octet-stream'){
+        if (! isset($mime_type) || $mime_type === 'application/octet-stream') {
             $fileInfo = Pluf_FileUtil::getMimeType($this->file_name);
             $this->mime_type = $fileInfo[0];
         }

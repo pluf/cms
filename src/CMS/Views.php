@@ -24,7 +24,7 @@ Pluf::loadFunction('CMS_Shortcuts_GetNamedContentOr404');
  *
  * @author maso<mostafa.barmshory@dpq.co.ir>
  */
-class CMS_Views
+class CMS_Views extends Pluf_Views
 {
 
     /**
@@ -80,25 +80,53 @@ class CMS_Views
     }
 
     /**
-     * Update content meta information
-     *
+     * Updates meta information of content
+     * 
      * @param Pluf_HTTP_Request $request
      * @param array $match
-     * @return Pluf_HTTP_Response_Json
+     * @throws Pluf_Exception_PermissionDenied
+     * @return Pluf_HTTP_Response
      */
     public function update($request, $match)
     {
         // تعیین داده‌ها
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['modelId']);
-        // اجرای درخواست
-        $extra = array(
-            'model' => $content
-        );
-        $form = new CMS_Form_ContentUpdate(array_merge($request->REQUEST, $request->FILES), $extra);
-        $content = $form->save();
-        return $content;
+        // بررسی دسترسی‌ها
+        if(!CMS_Precondition::isAuthor($request)){
+            throw new Pluf_Exception_PermissionDenied('You are not an author');
+        }
+        if(!CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id){
+            throw new Pluf_Exception_PermissionDenied('You can not change content created by another author');
+        }
+        return parent::updateObject($request, $match, array(
+            'model' => 'CMS_Content'
+        ));
     }
-
+    
+    /**
+     * Deletes a content 
+     * 
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @throws Pluf_Exception_PermissionDenied
+     * @return Pluf_HTTP_Response
+     */
+    public function delete($request, $match)
+    {
+        // تعیین داده‌ها
+        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['modelId']);
+        // بررسی دسترسی‌ها
+        if(!CMS_Precondition::isAuthor($request)){
+            throw new Pluf_Exception_PermissionDenied('You are not an author');
+        }
+        if(!CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id){
+            throw new Pluf_Exception_PermissionDenied('You can not delete content created by another author');
+        }
+        return parent::deleteObject($request, $match, array(
+            'model' => 'CMS_Content'
+        ));
+    }
+    
     /**
      * Finds contents
      *
@@ -146,26 +174,28 @@ class CMS_Views
      */
     public function updateFile($request, $match)
     {
-        // GET data
+        // Get data
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['modelId']);
+        // Check accesss
+        if(!CMS_Precondition::isAuthor($request)){
+            throw new Pluf_Exception_PermissionDenied('You are not an author');
+        }
+        if(!CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id){
+            throw new Pluf_Exception_PermissionDenied('You can not change content created by another author');
+        }
+        // Do action
         if (array_key_exists('file', $request->FILES)) {
-            // $extra = array(
-            // // 'user' => $request->user,
-            // 'content' => $content
-            // );
-            // $form = new CMS_Form_ContentUpdate(
-            // array_merge($request->REQUEST, $request->FILES), $extra);
-            // $content = $form->update();
-            // // return new Pluf_HTTP_Response_Json($content);
-            return $this->update($request, $match);
+            $extra = array(
+                'model' => $content
+            );
+            $form = new CMS_Form_ContentUpdate(array_merge($request->REQUEST, $request->FILES), $extra);
+            $content = $form->save();
+            return $content;
         } else {
-            // Do
             $myfile = fopen($content->getAbsloutPath(), "w") or die("Unable to open file!");
             $entityBody = file_get_contents('php://input', 'r');
             fwrite($myfile, $entityBody);
             fclose($myfile);
-            // $content->file_size = filesize(
-            // $content->file_path . '/' . $content->id);
             $content->update();
         }
         return $content;
@@ -183,3 +213,4 @@ class CMS_Views
         throw new Pluf_Exception('Not implemented yet!');
     }
 }
+

@@ -4,18 +4,55 @@
 	"model": [
 		"CMS_Content"
 	],
-	"permisson": [],
-	"monitor":[{
-		"bean": "cms",
-		"property": "count",
-		"title": "Number of contents",
-		"description": "Defines number of contents created on the server.",
-		"function": "CMS_Monitor::count"
-	}, {
-		"bean": "cms",
-		"property": "size",
-		"title": "Contents size",
-		"description": "Size of all contents.",
-		"function": "CMS_Monitor::size"
-	}]
+	"init": {
+		"User_Role": [
+			{
+				"name": "editor",
+				"application": "cms",
+				"code_name": "editor",
+				"description": "Permission given to cms editors."
+			},
+			{
+				"name": "author",
+				"application": "cms",
+				"code_name": "author",
+				"description": "Permission given to cms authors."
+			}
+		],
+		"Monitor_Tag": [
+			{
+				"name": "cms",
+				"description": "Tag for monitors on CMS metrics"
+			}
+		],
+		"Monitor_Metric": [
+			{
+				"name": "cms.count",
+				"title": "Number of contents",
+				"description": "Defines number of contents created on the server.",
+				"function": "CMS_Monitor::count",
+				"cacheable": true,
+				"interval": 60
+			},
+			{
+				"name": "cms.size",
+				"title": "Contents size",
+				"description": "Size of all contents.",
+				"function": "CMS_Monitor::size"
+			}
+		]
+	},
+	"init_assoc": {
+		"Monitor_Tag|Monitor_Metric": [
+			{
+				"from": "name='cms'",
+				"to": "name='cms.count'"
+			},
+			{
+				"from": "name='cms'",
+				"to": "name='cms.size'"
+			}
+		]
+	}
 }
+
