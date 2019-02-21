@@ -13,6 +13,7 @@ $cfg['installed_apps'] = array(
     'User',
     'Group',
     'Role',
+    'Monitor',
     'CMS'
 );
 

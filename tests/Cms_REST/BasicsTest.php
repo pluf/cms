@@ -69,7 +69,7 @@ class Cms_REST_BasicsTest extends TestCase
     /**
      * @test
      */
-    public function listUsersRestTest()
+    public function listContentsRestTest()
     {
         $client = new Test_Client(array(
             array(
@@ -87,7 +87,7 @@ class Cms_REST_BasicsTest extends TestCase
     /**
      * @test
      */
-    public function loginRestTest()
+    public function crudRestTest()
     {
         $client = new Test_Client(array(
             array(
@@ -123,12 +123,12 @@ class Cms_REST_BasicsTest extends TestCase
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
         
-        // Get by id
         $content = new CMS_Content();
         $content->name = 'test content' . rand();
         $content->mime_type = 'application/test';
         $content->create();
         
+        // Get by id
         $response = $client->get('/api/v2/cms/contents/' . $content->id);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
