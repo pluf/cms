@@ -36,7 +36,7 @@ return array(
         'method' => 'create',
         'http-method' => 'POST',
         'precond' => array(
-            'User_Precondition::ownerRequired'
+            'CMS_Precondition::authorRequired'
         )
     ),
     array( // Read (list)
@@ -56,26 +56,20 @@ return array(
     ),
     array( // Update
         'regex' => '#^/contents/(?P<modelId>\d+)$#',
-        'model' => 'Pluf_Views',
-        'method' => 'updateObject',
+        'model' => 'CMS_Views',
+        'method' => 'update',
         'http-method' => 'POST',
         'precond' => array(
-            'User_Precondition::ownerRequired'
-        ),
-        'params' => array(
-            'model' => 'CMS_Content'
+            'CMS_Precondition::authorRequired'
         )
     ),
     array( // Delete
         'regex' => '#^/contents/(?P<modelId>\d+)$#',
-        'model' => 'Pluf_Views',
-        'method' => 'deleteObject',
+        'model' => 'CMS_Views',
+        'method' => 'delete',
         'http-method' => 'DELETE',
         'precond' => array(
-            'User_Precondition::ownerRequired'
-        ),
-        'params' => array(
-            'model' => 'CMS_Content'
+            'CMS_Precondition::authorRequired'
         )
     ),
     
@@ -99,7 +93,7 @@ return array(
         'method' => 'updateFile',
         'http-method' => 'POST',
         'precond' => array(
-            'User_Precondition::loginRequired'
+            'CMS_Precondition::authorRequired'
         )
     ),
     array( // Read
@@ -135,7 +129,7 @@ return array(
         'method' => 'updateThumbnail',
         'http-method' => 'POST',
         'precond' => array(
-            'User_Precondition::loginRequired'
+            'CMS_Precondition::authorRequired'
         )
     ),
 

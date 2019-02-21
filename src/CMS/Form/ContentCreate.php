@@ -65,7 +65,7 @@ class CMS_Form_ContentCreate extends Pluf_Form_Model
                         'An error occured when creating the upload path. Please try to send the file again.');
             }
         }
-        $content->submitter = $this->user;
+        $content->author_id = $this->user;
         $content->tenant = $this->tenant;
         if ($commit) {
             $content->create();
