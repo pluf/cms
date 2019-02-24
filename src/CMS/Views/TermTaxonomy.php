@@ -30,17 +30,25 @@ class CMS_Views_TermTaxonomy extends Pluf_Views
         } elseif (array_key_exists('id', $request->REQUEST)) {
             $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $request->REQUEST['id']);
         }
-        if(!isset($content)){
+        if (! isset($content)) {
             throw new Pluf_Exception_BadRequest('Content is not determined');
         }
         // بررسی دسترسی‌ها
-        if(!CMS_Precondition::isAuthor($request)){
+        if (! CMS_Precondition::isAuthor($request)) {
             throw new Pluf_Exception_PermissionDenied('You are not an author');
         }
-        if(!CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id){
+        if (! CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id) {
             throw new Pluf_Exception_PermissionDenied('You can not change content created by another author');
         }
-        $tt->setAssoc($content);
+        // Check if association is existed already
+        $relatedContents = $tt->get_contents_ids_list(array(
+            'filter' => 'id=' . $content->id
+        ));
+        if ($relatedContents->count() === 0) {
+            $tt->setAssoc($content);
+            $tt->count += 1;
+            $tt->update();
+        }
         return $content;
     }
 
@@ -75,7 +83,7 @@ class CMS_Views_TermTaxonomy extends Pluf_Views
             ->setWhereClause($sql)
             ->build();
     }
-    
+
     public static function removeContent($request, $match)
     {
         $tt = Pluf_Shortcuts_GetObjectOr404('CMS_TermTaxonomy', $match['parentId']);
@@ -85,21 +93,30 @@ class CMS_Views_TermTaxonomy extends Pluf_Views
         } elseif (array_key_exists('id', $request->REQUEST)) {
             $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $request->REQUEST['id']);
         }
-        if(!isset($content)){
+        if (! isset($content)) {
             throw new Pluf_Exception_BadRequest('Content is not determined');
         }
         // بررسی دسترسی‌ها
-        if(!CMS_Precondition::isAuthor($request)){
+        if (! CMS_Precondition::isAuthor($request)) {
             throw new Pluf_Exception_PermissionDenied('You are not an author');
         }
-        if(!CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id){
+        if (! CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id) {
             throw new Pluf_Exception_PermissionDenied('You can not change content created by another author');
         }
-        $tt->delAssoc($content);
+        // Check if association is existed
+        $relatedContents = $tt->get_contents_ids_list(array(
+            'filter' => 'id=' . $content->id
+        ));
+        if ($relatedContents->count() > 0) {
+            $tt->delAssoc($content);
+            $tt->count -= 1;
+            $tt->update();
+        }
         return $content;
     }
-    
-    public static function taxonomies($request, $match){
+
+    public static function taxonomies($request, $match)
+    {
         $p = array(
             'select' => '`id`,`taxonomy`,count(`term_id`) as `count`',
             'group' => '`taxonomy`'
@@ -115,7 +132,6 @@ class CMS_Views_TermTaxonomy extends Pluf_Views
         );
         return $page;
     }
-    
 }
 
 
