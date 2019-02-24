@@ -2,7 +2,9 @@
 	"name": "CMS",
 	"title": "Content Management System",
 	"model": [
-		"CMS_Content"
+		"CMS_Content",
+		"CMS_Term",
+		"CMS_TermTaxonomy"
 	],
 	"init": {
 		"User_Role": [
