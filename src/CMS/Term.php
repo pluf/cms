@@ -45,7 +45,7 @@ class CMS_Term extends Pluf_Model
     {
         $this->_a['table'] = 'cms_terms';
         $this->_a['cols'] = array(
-            // شناسه‌ها
+            // ID
             'id' => array(
                 'type' => 'Pluf_DB_Field_Sequence',
                 'blank' => false,
@@ -53,7 +53,7 @@ class CMS_Term extends Pluf_Model
                 'help_text' => 'id',
                 'editable' => false
             ),
-            // فیلدها
+            // Fields
             'name' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
                 'is_null' => false,
@@ -71,20 +71,6 @@ class CMS_Term extends Pluf_Model
             /*
              * Foreign keys
              */
-        );
-
-        $this->_a['idx'] = array(
-            'term_taxonomy_unique_idx' => array(
-                'col' => array(
-                    'taxonomy',
-                    'term_id'
-                ),
-                'type' => 'unique', // normal, unique, fulltext, spatial
-                'index_type' => '', // hash, btree
-                'index_option' => '',
-                'algorithm_option' => '',
-                'lock_option' => ''
-            )
         );
     }
 }

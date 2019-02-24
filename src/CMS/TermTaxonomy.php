@@ -91,7 +91,7 @@ class CMS_TermTaxonomy extends Pluf_Model
             ),
             'parent_id' => array(
                 'type' => 'Pluf_DB_Field_Foreignkey',
-                'model' => 'CMS_Term',
+                'model' => 'CMS_TermTaxonomy',
                 'name' => 'parent',
                 'graphql_name' => 'parent',
                 'relate_name' => 'children',
@@ -111,10 +111,7 @@ class CMS_TermTaxonomy extends Pluf_Model
 
         $this->_a['idx'] = array(
             'term_taxonomy_unique_idx' => array(
-                'col' => array(
-                    'taxonomy',
-                    'term_id'
-                ),
+                'col' => 'taxonomy,term_id,parent_id',
                 'type' => 'unique', // normal, unique, fulltext, spatial
                 'index_type' => '', // hash, btree
                 'index_option' => '',
