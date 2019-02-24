@@ -17,10 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 return array(
-        'CMS_Content' => array(
-                'relate_to' => array(
-                        'Pluf_Tenant',
-                        'User'
-                )
+    'CMS_Content' => array(
+        'relate_to' => array(
+            'User'
         )
+    ),
+    'CMS_TermTaxonomy' => array(
+        'relate_to' => array(
+            'CMS_Term',
+            'User'
+        ),        
+        'relate_to_many' => array(
+            'CMS_Content'
+        )  
+    )
 );
