@@ -1,6 +1,6 @@
 language: php
 php:
-  - '5.6'
+  # - '5.6' : IS NOT SUPPORTED ANYMORE
   - '7.1'
 
 services:

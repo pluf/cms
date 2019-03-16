@@ -4,11 +4,7 @@
 		<testsuite name="CMS">
 			<directory>tests/Cms/</directory>
 			<directory>tests/Cms_Content/</directory>
-		</testsuite>
-		<testsuite name="CMS REST">
 			<directory>tests/Cms_REST/</directory>
-		</testsuite>
-		<testsuite name="CMS Monitor">
 			<directory>tests/Cms_Monitor/</directory>
 		</testsuite>
 	</testsuites>

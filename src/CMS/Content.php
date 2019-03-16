@@ -243,7 +243,7 @@ class CMS_Content extends Pluf_Model
     function preDelete()
     {
         // remove related file
-        $filename = $this->file_path . '/' . $this->id;
+        $filename = $this->getAbsloutPath();
         if (is_file($filename)) {
             unlink($filename);
         }
