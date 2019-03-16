@@ -256,7 +256,7 @@ class Cms_REST_BasicsTest extends TestCase
      *
      * @test
      */
-    public function deleteMetaOfContent()
+    public function getMetaOfContent()
     {
         // login
         $response = self::$client->post('/api/v2/user/login', array(
