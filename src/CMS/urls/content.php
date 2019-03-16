@@ -72,11 +72,87 @@ return array(
             'CMS_Precondition::authorRequired'
         )
     ),
-    /*
-     * Term-Taxonomies of content 
-     */
-    // /cms/contents/{commentId}/term-taxonomies:
     
+    
+    //--------------------------------------------------------------------
+    // Content metas
+    //--------------------------------------------------------------------
+    array( // list
+        'regex' => '#^/contents/(?P<modelId>\d+)/metas$#',
+        'model' => 'Pluf_Views',
+        'method' => 'getObject',
+        'http-method' => 'GET',
+        'params' => array(
+            'model' => 'CMS_Content'
+        )
+    ),
+    array( // add new
+        'regex' => '#^/contents/(?P<modelId>\d+)/metas$#',
+        'model' => 'CMS_Views',
+        'method' => 'update',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        )
+    ),
+    array( // Delete
+        'regex' => '#^/contents/(?P<modelId>\d+)/metas$#',
+        'model' => 'CMS_Views',
+        'method' => 'delete',
+        'http-method' => 'DELETE',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        )
+    ),
+    array( // get a meta
+        'regex' => '#^/contents/(?P<modelId>\d+)/metas/(?P<childId>\d+)$#',
+        'model' => 'Pluf_Views',
+        'method' => 'getObject',
+        'http-method' => 'GET',
+        'params' => array(
+            'model' => 'CMS_Content'
+        )
+    ),
+    array( // add new
+        'regex' => '#^/contents/(?P<modelId>\d+)/metas/(?P<childId>\d+)$#',
+        'model' => 'CMS_Views',
+        'method' => 'update',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        )
+    ),
+    array( // Delete
+        'regex' => '#^/contents/(?P<modelId>\d+)/metas/(?P<childId>\d+)$#',
+        'model' => 'CMS_Views',
+        'method' => 'delete',
+        'http-method' => 'DELETE',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        )
+    ),
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //--------------------------------------------------------------------
+    // Term-Taxonomies of content
+    //--------------------------------------------------------------------
+    // TODO: maso, /cms/contents/{commentId}/term-taxonomies:
+    
+    
+    
+    
+    
+    //--------------------------------------------------------------------
+    // Content metas
+    //--------------------------------------------------------------------
     /*
      * Binary content of content
      */

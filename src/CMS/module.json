@@ -3,6 +3,7 @@
 	"title": "Content Management System",
 	"model": [
 		"CMS_Content",
+		"CMS_ContentMeta",
 		"CMS_Term",
 		"CMS_TermTaxonomy"
 	],

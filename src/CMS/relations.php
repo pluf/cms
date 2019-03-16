@@ -22,6 +22,11 @@ return array(
             'User'
         )
     ),
+    'CMS_ContentMeta' => array(
+        'relate_to' => array(
+            'CMS_Content'
+        )
+    ),
     'CMS_TermTaxonomy' => array(
         'relate_to' => array(
             'CMS_Term',
