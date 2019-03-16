@@ -102,7 +102,6 @@ class CMS_TermTaxonomy extends Pluf_Model
                 'type' => 'Pluf_DB_Field_Manytomany',
                 'model' => 'CMS_Content',
                 'is_null' => true,
-                'readable' => false,
                 'editable' => false,
                 'relate_name' => 'term_taxonomies',
                 'graphql_name' => 'contents'
