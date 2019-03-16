@@ -74,63 +74,6 @@ return array(
     ),
     
     
-    //--------------------------------------------------------------------
-    // Content metas
-    //--------------------------------------------------------------------
-    array( // list
-        'regex' => '#^/contents/(?P<modelId>\d+)/metas$#',
-        'model' => 'Pluf_Views',
-        'method' => 'getObject',
-        'http-method' => 'GET',
-        'params' => array(
-            'model' => 'CMS_Content'
-        )
-    ),
-    array( // add new
-        'regex' => '#^/contents/(?P<modelId>\d+)/metas$#',
-        'model' => 'CMS_Views',
-        'method' => 'update',
-        'http-method' => 'POST',
-        'precond' => array(
-            'CMS_Precondition::authorRequired'
-        )
-    ),
-    array( // Delete
-        'regex' => '#^/contents/(?P<modelId>\d+)/metas$#',
-        'model' => 'CMS_Views',
-        'method' => 'delete',
-        'http-method' => 'DELETE',
-        'precond' => array(
-            'CMS_Precondition::authorRequired'
-        )
-    ),
-    array( // get a meta
-        'regex' => '#^/contents/(?P<modelId>\d+)/metas/(?P<childId>\d+)$#',
-        'model' => 'Pluf_Views',
-        'method' => 'getObject',
-        'http-method' => 'GET',
-        'params' => array(
-            'model' => 'CMS_Content'
-        )
-    ),
-    array( // add new
-        'regex' => '#^/contents/(?P<modelId>\d+)/metas/(?P<childId>\d+)$#',
-        'model' => 'CMS_Views',
-        'method' => 'update',
-        'http-method' => 'POST',
-        'precond' => array(
-            'CMS_Precondition::authorRequired'
-        )
-    ),
-    array( // Delete
-        'regex' => '#^/contents/(?P<modelId>\d+)/metas/(?P<childId>\d+)$#',
-        'model' => 'CMS_Views',
-        'method' => 'delete',
-        'http-method' => 'DELETE',
-        'precond' => array(
-            'CMS_Precondition::authorRequired'
-        )
-    ),
     
     
     
@@ -156,41 +99,80 @@ return array(
     /*
      * Binary content of content
      */
-    array( // Read
-        'regex' => '#^/contents/(?P<modelId>\d+)/content$#',
-        'model' => 'CMS_Views',
-        'method' => 'download',
+    array( // list read
+        'regex' => '#^/contents/(?P<parentId>\d+)/metas$#',
+        'model' => 'Pluf_Views',
+        'method' => 'findManyToOne',
         'http-method' => 'GET',
-        // Cache apram
-        'cacheable' => true,
-        'revalidate' => true,
-        'intermediate_cache' => true,
-        'max_age' => 25000
+        'params' => array(
+            'parent' => 'CMS_Content',
+            'parentKey' => 'content_id',
+            'model' => 'CMS_ContentMeta'
+        )
     ),
-    array( // Update
-        'regex' => '#^/contents/(?P<modelId>\d+)/content$#',
-        'model' => 'CMS_Views',
-        'method' => 'updateFile',
+    array( // list add
+        'regex' => '#^/contents/(?P<parentId>\d+)/metas$#',
+        'model' => 'Pluf_Views',
+        'method' => 'createManyToOne',
         'http-method' => 'POST',
         'precond' => array(
             'CMS_Precondition::authorRequired'
+        ),
+        'params' => array(
+            'parent' => 'CMS_Content',
+            'parentKey' => 'content_id',
+            'model' => 'CMS_ContentMeta',
+            // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
         )
     ),
-    array( // Read
-        'regex' => '#^/contents/(?P<name>[^/]+)/content$#',
-        'model' => 'CMS_Views',
-        'method' => 'download',
+    
+    array( // get item 
+        'regex' => '#^/contents/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
+        'model' => 'Pluf_Views',
+        'method' => 'getManyToOne',
         'http-method' => 'GET',
-        // Cache apram
-        'cacheable' => true,
-        'revalidate' => true,
-        'intermediate_cache' => true,
-        'max_age' => 25000
+        'params' => array(
+            'parent' => 'CMS_Content',
+            'parentKey' => 'content_id',
+            'model' => 'CMS_ContentMeta',
+        )
+    ),
+    array( // Update item 
+        'regex' => '#^/contents/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
+        'model' => 'Pluf_Views',
+        'method' => 'deleteManyToOne',
+        'http-method' => array('POST', 'PUT'),
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        ),
+        'params' => array(
+            'parent' => 'CMS_Content',
+            'parentKey' => 'content_id',
+            'model' => 'CMS_ContentMeta',
+            // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
+        )
+    ),
+    array( // delete item 
+        'regex' => '#^/contents/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
+        'model' => 'Pluf_Views',
+        'method' => 'deleteManyToOne',
+        'http-method' => 'DELETE',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        ),
+        'params' => array(
+            'parent' => 'CMS_Content',
+            'parentKey' => 'content_id',
+            'model' => 'CMS_ContentMeta',
+            // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
+        )
     ),
     
-    /*
-     * Thumbnail of content
-     */
+    
+    
+    //--------------------------------------------------------------------
+    // Content Thumbnail
+    //--------------------------------------------------------------------
     // TODO: maso, 2018: implement thumbnail generator
     array( // Read
         'regex' => '#^/contents/(?P<modelId>\d+)/thumbnail$#',
@@ -212,7 +194,8 @@ return array(
             'CMS_Precondition::authorRequired'
         )
     ),
-
+    
+    
     array( // Read (by name)
         'regex' => '#^/contents/(?P<name>.+)$#',
         'model' => 'CMS_Views',
