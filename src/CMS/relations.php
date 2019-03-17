@@ -19,7 +19,7 @@
 return array(
     'CMS_Content' => array(
         'relate_to' => array(
-            'User'
+            'User_Account'
         )
     ),
     'CMS_ContentMeta' => array(
@@ -30,7 +30,7 @@ return array(
     'CMS_TermTaxonomy' => array(
         'relate_to' => array(
             'CMS_Term',
-            'User'
+            'User_Account'
         ),        
         'relate_to_many' => array(
             'CMS_Content'
