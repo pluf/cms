@@ -42,10 +42,10 @@ class CMS_Views extends Pluf_Views
             'user' => $request->user,
             'model' => new CMS_Content()
         );
-        
+
         // Create content and get its ID
         $form = new CMS_Form_ContentCreate($request->REQUEST, $extra);
-        
+
         // Upload content file and extract information about it (by updating
         // content)
         $extra['model'] = $form->save();
@@ -81,7 +81,7 @@ class CMS_Views extends Pluf_Views
 
     /**
      * Updates meta information of content
-     * 
+     *
      * @param Pluf_HTTP_Request $request
      * @param array $match
      * @throws Pluf_Exception_PermissionDenied
@@ -92,20 +92,20 @@ class CMS_Views extends Pluf_Views
         // تعیین داده‌ها
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['modelId']);
         // بررسی دسترسی‌ها
-        if(!CMS_Precondition::isAuthor($request)){
+        if (! CMS_Precondition::isAuthor($request)) {
             throw new Pluf_Exception_PermissionDenied('You are not an author');
         }
-        if(!CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id){
+        if (! CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id) {
             throw new Pluf_Exception_PermissionDenied('You can not change content created by another author');
         }
         return parent::updateObject($request, $match, array(
             'model' => 'CMS_Content'
         ));
     }
-    
+
     /**
-     * Deletes a content 
-     * 
+     * Deletes a content
+     *
      * @param Pluf_HTTP_Request $request
      * @param array $match
      * @throws Pluf_Exception_PermissionDenied
@@ -116,17 +116,17 @@ class CMS_Views extends Pluf_Views
         // تعیین داده‌ها
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['modelId']);
         // بررسی دسترسی‌ها
-        if(!CMS_Precondition::isAuthor($request)){
+        if (! CMS_Precondition::isAuthor($request)) {
             throw new Pluf_Exception_PermissionDenied('You are not an author');
         }
-        if(!CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id){
+        if (! CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id) {
             throw new Pluf_Exception_PermissionDenied('You can not delete content created by another author');
         }
         return parent::deleteObject($request, $match, array(
             'model' => 'CMS_Content'
         ));
     }
-    
+
     /**
      * Finds contents
      *
@@ -137,9 +137,7 @@ class CMS_Views extends Pluf_Views
     public function find($request, $match)
     {
         $builder = new Pluf_Paginator_Builder(new CMS_Content());
-        return $builder
-            ->setRequest($request)
-            ->build();
+        return $builder->setRequest($request)->build();
     }
 
     /**
@@ -177,10 +175,10 @@ class CMS_Views extends Pluf_Views
         // Get data
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['modelId']);
         // Check accesss
-        if(!CMS_Precondition::isAuthor($request)){
+        if (! CMS_Precondition::isAuthor($request)) {
             throw new Pluf_Exception_PermissionDenied('You are not an author');
         }
-        if(!CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id){
+        if (! CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id) {
             throw new Pluf_Exception_PermissionDenied('You can not change content created by another author');
         }
         // Do action
@@ -200,7 +198,7 @@ class CMS_Views extends Pluf_Views
         }
         return $content;
     }
-    
+
     /**
      * Upload a file as thumbnail
      *
@@ -211,6 +209,100 @@ class CMS_Views extends Pluf_Views
     public function updateThumbnail($request, $match)
     {
         throw new Pluf_Exception('Not implemented yet!');
+    }
+
+    public static function addTermTaxonomy($request, $match)
+    {
+        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['parentId']);
+        $tt = NULL;
+        if (array_key_exists('modelId', $match)) {
+            $tt = Pluf_Shortcuts_GetObjectOr404('CMS_TermTaxonomy', $match['modelId']);
+        } elseif (array_key_exists('id', $request->REQUEST)) {
+            $tt = Pluf_Shortcuts_GetObjectOr404('CMS_TermTaxonomy', $request->REQUEST['id']);
+        }
+        if (! isset($tt)) {
+            throw new Pluf_Exception_BadRequest('TermTaxonomy is not determined');
+        }
+        // بررسی دسترسی‌ها
+        if (! CMS_Precondition::isAuthor($request)) {
+            throw new Pluf_Exception_PermissionDenied('You are not an author');
+        }
+        if (! CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id) {
+            throw new Pluf_Exception_PermissionDenied('You can not change content created by another author');
+        }
+        // Check if association is existed already
+        $relatedContents = $tt->get_contents_ids_list(array(
+            'filter' => 'id=' . $content->id
+        ));
+        if ($relatedContents->count() === 0) {
+            $tt->setAssoc($content);
+            $tt->count += 1;
+            $tt->update();
+        }
+        return $tt;
+    }
+
+    /**
+     * Finds term-taxonomies related to a content
+     *
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @return Pluf_HTTP_Response_Json
+     */
+    public function findTermTaxonomies($request, $match)
+    {
+        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['parentId']);
+        $tt = new CMS_TermTaxonomy();
+        Pluf::loadFunction('Pluf_Shortcuts_GetAssociationTableName');
+        $assoc = $tt->_con->pfx . Pluf_Shortcuts_GetAssociationTableName('CMS_Content', 'CMS_TermTaxonomy');
+        $tt_table = $tt->_con->pfx . $tt->_a['table'];
+        Pluf::loadFunction('Pluf_Shortcuts_GetForeignKeyName');
+        $tt_fk = Pluf_Shortcuts_GetForeignKeyName('CMS_TermTaxonomy');
+        $content_fk = Pluf_Shortcuts_GetForeignKeyName('CMS_Content');
+        $tt->_a['views'] = array(
+            'join_content' => array(
+                'join' => 'LEFT JOIN ' . $assoc . ' ON ' . $tt_table . '.id=' . $tt_fk
+            )
+        );
+        $sql = new Pluf_SQL('`' . $content_fk . '`=%s', array(
+            $content->id
+        ));
+        $builder = new Pluf_Paginator_Builder($tt);
+        return $builder->setRequest($request)
+            ->setView('join_content')
+            ->setWhereClause($sql)
+            ->build();
+    }
+
+    public static function removeTermTaxonomy($request, $match)
+    {
+        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['parentId']);
+        $tt = NULL;
+        if (array_key_exists('modelId', $match)) {
+            $tt = Pluf_Shortcuts_GetObjectOr404('CMS_TermTaxonomy', $match['modelId']);
+        } elseif (array_key_exists('id', $request->REQUEST)) {
+            $tt = Pluf_Shortcuts_GetObjectOr404('CMS_TermTaxonomy', $request->REQUEST['id']);
+        }
+        if (! isset($tt)) {
+            throw new Pluf_Exception_BadRequest('Term-taxonomy is not determined');
+        }
+        // بررسی دسترسی‌ها
+        if (! CMS_Precondition::isAuthor($request)) {
+            throw new Pluf_Exception_PermissionDenied('You are not an author');
+        }
+        if (! CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id) {
+            throw new Pluf_Exception_PermissionDenied('You can not change content created by another author');
+        }
+        // Check if association is existed
+        $relatedContents = $tt->get_contents_ids_list(array(
+            'filter' => 'id=' . $content->id
+        ));
+        if ($relatedContents->count() > 0) {
+            $tt->delAssoc($content);
+            $tt->count -= 1;
+            $tt->update();
+        }
+        return $tt;
     }
 }
 
