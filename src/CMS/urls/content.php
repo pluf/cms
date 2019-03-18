@@ -72,33 +72,47 @@ return array(
             'CMS_Precondition::authorRequired'
         )
     ),
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    //--------------------------------------------------------------------
-    // Term-Taxonomies of content
-    //--------------------------------------------------------------------
-    // TODO: maso, /cms/contents/{commentId}/term-taxonomies:
-    
-    
-    
-    
-    
-    //--------------------------------------------------------------------
+
+    // --------------------------------------------------------------------
+    // Term-Taxonomies of Content
+    // --------------------------------------------------------------------
+    array( // Create
+        'regex' => '#^/contents/(?P<parentId>\d+)/term-taxonomies$#',
+        'model' => 'CMS_Views',
+        'method' => 'addTermTaxonomy',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        )
+    ),
+    array( // Create
+        'regex' => '#^/contents/(?P<parentId>\d+)/term-taxonomies/(?P<modelId>\d+)$#',
+        'model' => 'CMS_Views',
+        'method' => 'addTermTaxonomy',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        )
+    ),
+    array( // Read (list)
+        'regex' => '#^/contents/(?P<parentId>\d+)/term-taxonomies$#',
+        'model' => 'CMS_Views',
+        'method' => 'findTermTaxonomies',
+        'http-method' => 'GET'
+    ),
+    array( // Delete
+        'regex' => '#^/contents/(?P<parentId>\d+)/term-taxonomies/(?P<modelId>\d+)$#',
+        'model' => 'CMS_Views',
+        'method' => 'removeTermTaxonomy',
+        'http-method' => 'DELETE',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        )
+    ),
+
+    // --------------------------------------------------------------------
     // Content metas
-    //--------------------------------------------------------------------
-    /*
-     * Binary content of content
-     */
+    // --------------------------------------------------------------------
     array( // list read
         'regex' => '#^/contents/(?P<parentId>\d+)/metas$#',
         'model' => 'Pluf_Views',
@@ -121,12 +135,12 @@ return array(
         'params' => array(
             'parent' => 'CMS_Content',
             'parentKey' => 'content_id',
-            'model' => 'CMS_ContentMeta',
+            'model' => 'CMS_ContentMeta'
             // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
         )
     ),
-    
-    array( // get item 
+
+    array( // get item
         'regex' => '#^/contents/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
         'model' => 'Pluf_Views',
         'method' => 'getManyToOne',
@@ -134,25 +148,28 @@ return array(
         'params' => array(
             'parent' => 'CMS_Content',
             'parentKey' => 'content_id',
-            'model' => 'CMS_ContentMeta',
+            'model' => 'CMS_ContentMeta'
         )
     ),
-    array( // Update item 
+    array( // Update item
         'regex' => '#^/contents/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
         'model' => 'Pluf_Views',
         'method' => 'deleteManyToOne',
-        'http-method' => array('POST', 'PUT'),
+        'http-method' => array(
+            'POST',
+            'PUT'
+        ),
         'precond' => array(
             'CMS_Precondition::authorRequired'
         ),
         'params' => array(
             'parent' => 'CMS_Content',
             'parentKey' => 'content_id',
-            'model' => 'CMS_ContentMeta',
+            'model' => 'CMS_ContentMeta'
             // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
         )
     ),
-    array( // delete item 
+    array( // delete item
         'regex' => '#^/contents/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
         'model' => 'Pluf_Views',
         'method' => 'deleteManyToOne',
@@ -163,16 +180,14 @@ return array(
         'params' => array(
             'parent' => 'CMS_Content',
             'parentKey' => 'content_id',
-            'model' => 'CMS_ContentMeta',
+            'model' => 'CMS_ContentMeta'
             // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
         )
     ),
-    
-    
-    
-    //--------------------------------------------------------------------
+
+    // --------------------------------------------------------------------
     // Content Thumbnail
-    //--------------------------------------------------------------------
+    // --------------------------------------------------------------------
     // TODO: maso, 2018: implement thumbnail generator
     array( // Read
         'regex' => '#^/contents/(?P<modelId>\d+)/thumbnail$#',
@@ -194,8 +209,7 @@ return array(
             'CMS_Precondition::authorRequired'
         )
     ),
-    
-    
+
     array( // Read (by name)
         'regex' => '#^/contents/(?P<name>.+)$#',
         'model' => 'CMS_Views',
