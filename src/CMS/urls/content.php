@@ -27,9 +27,9 @@ return array(
             'model' => 'CMS_Content'
         )
     ),
-    /*
-     * Content
-     */
+    // --------------------------------------------------------------------
+    // Content
+    // --------------------------------------------------------------------
     array( // Create
         'regex' => '#^/contents$#',
         'model' => 'CMS_Views',
@@ -73,6 +73,41 @@ return array(
         )
     ),
 
+    // --------------------------------------------------------------------
+    // Binary content of content
+    // --------------------------------------------------------------------
+    array( // Read
+        'regex' => '#^/contents/(?P<modelId>\d+)/content$#',
+        'model' => 'CMS_Views',
+        'method' => 'download',
+        'http-method' => 'GET',
+        // Cache apram
+        'cacheable' => true,
+        'revalidate' => true,
+        'intermediate_cache' => true,
+        'max_age' => 25000
+    ),
+    array( // Update
+        'regex' => '#^/contents/(?P<modelId>\d+)/content$#',
+        'model' => 'CMS_Views',
+        'method' => 'updateFile',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        )
+    ),
+    array( // Read
+        'regex' => '#^/contents/(?P<name>[^/]+)/content$#',
+        'model' => 'CMS_Views',
+        'method' => 'download',
+        'http-method' => 'GET',
+        // Cache apram
+        'cacheable' => true,
+        'revalidate' => true,
+        'intermediate_cache' => true,
+        'max_age' => 25000
+    ),
+    
     // --------------------------------------------------------------------
     // Term-Taxonomies of Content
     // --------------------------------------------------------------------
