@@ -107,7 +107,7 @@ return array(
         'intermediate_cache' => true,
         'max_age' => 25000
     ),
-    
+
     // --------------------------------------------------------------------
     // Term-Taxonomies of Content
     // --------------------------------------------------------------------
@@ -189,7 +189,7 @@ return array(
     array( // Update item
         'regex' => '#^/contents/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
         'model' => 'Pluf_Views',
-        'method' => 'deleteManyToOne',
+        'method' => 'updateManyToOne',
         'http-method' => array(
             'POST',
             'PUT'

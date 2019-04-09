@@ -25,7 +25,7 @@ require_once 'Pluf.php';
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class Cms_REST_TermTaxonomyOfContentTest extends TestCase
+class Cms_REST_MetadataOfContentTest extends TestCase
 {
 
     private static $client = null;
@@ -87,7 +87,7 @@ class Cms_REST_TermTaxonomyOfContentTest extends TestCase
     }
 
     /**
-     * Add term to a content
+     * Add meta to a content
      *
      * @test
      */
@@ -108,32 +108,28 @@ class Cms_REST_TermTaxonomyOfContentTest extends TestCase
         $content->description = 'This is a simple content is used in the test process';
         $content->mime_type = 'application/test';
         $content->create();
-        // Create term-taxonomy
-        $tt = new CMS_TermTaxonomy();
-        $tt->taxonomy = 'test-' . rand();
-        $tt->description = 'A term-taxonomy used in the test process';
-        $tt->create();
 
         // Adding new term-taxonomy to the content
         $form = array(
-            'id' => $tt->id
+            'key' => 'meta.key.test' . rand(),
+            'value' => 'meta.random.value' . rand()
         );
-        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/term-taxonomies', $form);
+        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/metas', $form);
         Test_Assert::assertResponseNotNull($response, 'Result is empty');
         Test_Assert::assertResponseStatusCode($response, 200, 'Status code is not 200');
 
-        // Getting list of term-taxonomies of content
-        $ttList = $content->get_term_taxonomies_list();
+        // Getting list of meta of content
+        $ttList = $content->get_metas_list();
         Test_Assert::assertNotNull($ttList, 'There is no term-taxonomy for the content');
         Test_Assert::assertTrue($ttList->count() > 0, 'There is no term-taxonomy related to the content');
     }
 
     /**
-     * Getting list of term-taxonomies of content
+     * Getting list of metas of content
      *
      * @test
      */
-    public function gettingTermTaxonomiesOfContent()
+    public function gettingMetadataOfContent()
     {
         // login
         $response = self::$client->post('/api/v2/user/login', array(
@@ -150,16 +146,15 @@ class Cms_REST_TermTaxonomyOfContentTest extends TestCase
         $content->description = 'This is a simple content is used in the test process';
         $content->mime_type = 'application/test';
         $content->create();
-        // Create term-taxonomy
-        $tt = new CMS_TermTaxonomy();
-        $tt->taxonomy = 'test-' . rand();
-        $tt->description = 'A term-taxonomy used in the test process';
+        // Create meta
+        $tt = new CMS_ContentMeta();
+        $tt->key = 'test-' . rand();
+        $tt->vlaue = 'A meta used in the test process';
+        $tt->content_id = $content;
         $tt->create();
-        // Add term-taxonomy to content
-        $tt->setAssoc($content);
 
-        // Getting list of term-taxonomies
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/term-taxonomies');
+        // Getting list of meta
+        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/metas');
         Test_Assert::assertResponseNotNull($response, 'Find result is empty');
         Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
         Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is empty');
@@ -167,7 +162,7 @@ class Cms_REST_TermTaxonomyOfContentTest extends TestCase
 
     /**
      *
-     * Delete a term-taxonomy from a content
+     * Delete a meta from a content
      *
      * @test
      */
@@ -188,30 +183,82 @@ class Cms_REST_TermTaxonomyOfContentTest extends TestCase
         $content->description = 'This is a simple content is used in the test process';
         $content->mime_type = 'application/test';
         $content->create();
-        // Create term-taxonomy
-        $tt = new CMS_TermTaxonomy();
-        $tt->taxonomy = 'test-' . rand();
-        $tt->description = 'A term-taxonomy used in the test process';
-        $tt->create();
-        // Add term-taxonomy to content
-        $tt->setAssoc($content);
 
-        // Getting list of term-taxonomies
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/term-taxonomies');
+        // Create meta
+        $tt = new CMS_ContentMeta();
+        $tt->key = 'test-' . rand();
+        $tt->vlaue = 'A meta used in the test process';
+        $tt->content_id = $content;
+        $tt->create();
+
+        // Getting list of meta
+        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/metas');
         Test_Assert::assertResponseNotNull($response, 'Find result is empty');
         Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
         Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is empty');
 
         // Delete term-taxonomoy from the content
-        $response = self::$client->delete('/api/v2/cms/contents/' . $content->id . '/term-taxonomies/' . $tt->id);
+        $response = self::$client->delete('/api/v2/cms/contents/' . $content->id . '/metas/' . $tt->id);
         Test_Assert::assertResponseNotNull($response, 'Result of delete request is empty');
         Test_Assert::assertResponseStatusCode($response, 200, 'Delete status code is not 200');
 
         // Getting list of metas
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/term-taxonomies');
+        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/metas');
         Test_Assert::assertResponseNotNull($response, 'Find result is empty');
         Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
         Test_Assert::assertResponseEmptyPaginateList($response, 'The list is not empty');
+    }
+
+    /**
+     *
+     * Update a meta from a content
+     *
+     * @test
+     */
+    public function updateMetaOfContent()
+    {
+        // login
+        $response = self::$client->post('/api/v2/user/login', array(
+            'login' => 'test',
+            'password' => 'test'
+        ));
+        $this->assertNotNull($response);
+        $this->assertEquals($response->status_code, 200);
+
+        // Create content
+        $content = new CMS_Content();
+        $content->name = 'test-content' . rand();
+        $content->title = 'test content';
+        $content->description = 'This is a simple content is used in the test process';
+        $content->mime_type = 'application/test';
+        $content->create();
+
+        // Create meta
+        $tt = new CMS_ContentMeta();
+        $tt->key = 'test-' . rand();
+        $tt->vlaue = 'A meta used in the test process';
+        $tt->content_id = $content;
+        $tt->create();
+
+        // Getting list of meta
+        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/metas');
+        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is empty');
+
+        // Delete term-taxonomoy from the content
+        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/metas/' . $tt->id, array(
+            'key' => 'test-' . rand(),
+            'value' => 'test-' . rand()
+        ));
+        Test_Assert::assertResponseNotNull($response, 'Result of delete request is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Delete status code is not 200');
+
+        // Getting list of metas
+        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/metas');
+        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is not empty');
     }
 }
 
