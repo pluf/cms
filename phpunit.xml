@@ -2,10 +2,10 @@
 <phpunit colors="true">
 	<testsuites>
 		<testsuite name="CMS">
-<!-- 			<directory>tests/Cms/</direcTORY> -->
-<!-- 			<DIRECTORY>TESTS/CMS_CONTENT/</directory> -->
-			<directory>tests/Cms_REST/MetadataOfContentTest.php</directory>
-<!-- 			<directory>tests/Cms_Monitor/</directory> -->
+			<directory>tests/Cms/</direcTORY>
+			<DIRECTORY>TESTS/CMS_CONTENT/</directory>
+			<directory>tests/Cms_REST/</directory>
+			<directory>tests/Cms_Monitor/</directory>
 		</testsuite>
 	</testsuites>
 
