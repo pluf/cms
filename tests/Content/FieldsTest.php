@@ -25,7 +25,7 @@ require_once 'Pluf.php';
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class Cms_Content_FieldsTest extends TestCase
+class Content_FieldsTest extends TestCase
 {
 
     /**
