@@ -20,16 +20,16 @@
 
 /**
  * TermTaxonomy data model.
- * 
+ *
  * A term is not a category or tag on its own. It must be given context via the TermTaxonomy entity.
- * The TermTaxonomy places a term within a taxonomy. 
+ * The TermTaxonomy places a term within a taxonomy.
  * This is what makes a term a category, a tag or part of a custom taxonomy (or in a combination of taxonomies).
  *
  * <li>taxonomy: designates the taxonomy in which the term resides. Some of examples for taxonomy are category, tag or link.</li>
  * <li>term_id: is the ID of a term in the terms table</li>
- * 
+ *
  * The rest of the fields provide information about the term in the context of the taxonomy.
- * 
+ *
  * <li>parent_id: it keeps track of hierarchical relationships between terms in the taxonomy.</li>
  * <li>description: provides a taxonomy specific description of the term.</li>
  * <li>count: tracks how many objects are associated with the term+taxonomy pair.</li>
@@ -84,8 +84,8 @@ class CMS_TermTaxonomy extends Pluf_Model
                 'type' => 'Pluf_DB_Field_Foreignkey',
                 'model' => 'CMS_Term',
                 'name' => 'term',
-                'relate_name' => 'contents',
                 'graphql_name' => 'term',
+                'relate_name' => 'term_taxonomies',
                 'is_null' => true,
                 'editable' => true
             ),
@@ -103,8 +103,9 @@ class CMS_TermTaxonomy extends Pluf_Model
                 'model' => 'CMS_Content',
                 'is_null' => true,
                 'editable' => false,
-                'relate_name' => 'term_taxonomies',
-                'graphql_name' => 'contents'
+                'name' => 'contents',
+                'graphql_name' => 'contents',
+                'relate_name' => 'term_taxonomies'
             )
         );
 
