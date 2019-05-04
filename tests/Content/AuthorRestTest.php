@@ -25,13 +25,13 @@ require_once 'Pluf.php';
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class Cms_REST_EditorRestTest extends TestCase
+class Content_AuthorRestTest extends TestCase
 {
 
     var $client;
 
-    var $author;
-    var $editor;
+    var $author1;
+    var $author2;
 
     /**
      *
@@ -44,9 +44,9 @@ class Cms_REST_EditorRestTest extends TestCase
         $m->install();
         $m->init();
 
-        // Create user: author
+        // Create user: author1
         $user = new User_Account();
-        $user->login = 'author';
+        $user->login = 'author1';
         $user->is_active = true;
         if (true !== $user->create()) {
             throw new Exception();
@@ -63,9 +63,9 @@ class Cms_REST_EditorRestTest extends TestCase
         $per = User_Role::getFromString('cms.author');
         $user->setAssoc($per);
         
-        // Create user: editor
+        // Create user: author2
         $user = new User_Account();
-        $user->login = 'editor';
+        $user->login = 'author2';
         $user->is_active = true;
         if (true !== $user->create()) {
             throw new Exception();
@@ -79,7 +79,7 @@ class Cms_REST_EditorRestTest extends TestCase
         if (true !== $credit->create()) {
             throw new Exception();
         }
-        $per = User_Role::getFromString('cms.editor');
+        $per = User_Role::getFromString('cms.author');
         $user->setAssoc($per);
     }
 
@@ -115,15 +115,15 @@ class Cms_REST_EditorRestTest extends TestCase
         ));
         // login
         $response = $this->client->post('/user/login', array(
-            'login' => 'editor',
+            'login' => 'author1',
             'password' => '123456'
         ));
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
         
         // Authors
-        $this->author = User_Account::getUser('author');
-        $this->editor = User_Account::getUser('editor');
+        $this->author1 = User_Account::getUser('author1');
+        $this->author2 = User_Account::getUser('author2');
     }
 
     /**
@@ -143,10 +143,10 @@ class Cms_REST_EditorRestTest extends TestCase
         $response = $this->client->post('/cms/contents', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
-        // Editor could create page
+        // Check author
         Pluf::loadFunction('CMS_Shortcuts_GetNamedContentOr404');
         $content = CMS_Shortcuts_GetNamedContentOr404($name);
-        $this->assertEquals($this->editor->id, $content->author_id);
+        $this->assertEquals($this->author1->id, $content->author_id);
     }
 
     /**
@@ -159,9 +159,9 @@ class Cms_REST_EditorRestTest extends TestCase
         $content->name = 'test-content' . rand();
         $content->title = 'Title ' . rand();
         $content->description = 'It is my content description';
-        $content->author_id = $this->author;
+        $content->author_id = $this->author1;
         Test_Assert::assertTrue($content->create(), 'Impossible to create cms content');
-        // Editor could change content created by any author
+        // Author could change content created by himself
         $form = array(
             'name' => 'updated name',
             'title' => 'updated title',
@@ -181,15 +181,44 @@ class Cms_REST_EditorRestTest extends TestCase
      *
      * @test
      */
+    public function anotherAuthorUpdateTest()
+    {
+        $content = new CMS_Content();
+        $content->name = 'test-content' . rand();
+        $content->title = 'Title ' . rand();
+        $content->description = 'It is my content description';
+        $content->author_id = $this->author2;
+        Test_Assert::assertTrue($content->create(), 'Impossible to create cms content');
+        // Author could not change content created by another author
+        $this->expectException(Pluf_Exception_PermissionDenied::class);
+        $form = array(
+            'name' => 'updated name',
+            'title' => 'updated title',
+            'description' => 'updated description'
+        );
+        $response = $this->client->post('/cms/contents/' . $content->id, $form);
+        $this->assertEquals($response->status_code, 403);
+        
+        // Content should remain unchanged
+        $afterContent = CMS_Content($content->id);
+        $this->assertEquals($content->name, $afterContent->name);
+        $this->assertEquals($content->title, $afterContent->title);
+        $this->assertEquals($content->description, $afterContent->description);        
+    }
+
+    /**
+     *
+     * @test
+     */
     public function deleteTest()
     {
         $content = new CMS_Content();
         $content->name = 'test-content' . rand();
         $content->title = 'Title ' . rand();
         $content->description = 'It is my content description';
-        $content->author_id = $this->author;
+        $content->author_id = $this->author1;
         Test_Assert::assertTrue($content->create(), 'Impossible to create cms content');
-        // Author could delete content created by any author
+        // Author could delete content created by himself
         $response = $this->client->delete('/cms/contents/' . $content->id);
         $this->assertEquals($response->status_code, 200);
         
@@ -197,6 +226,31 @@ class Cms_REST_EditorRestTest extends TestCase
         Pluf::loadFunction('Pluf_Shortcuts_GetObjectOr404');
         $this->expectException(Pluf_HTTP_Error404::class);
         Pluf_Shortcuts_GetObjectOr404('CMS_Content', $content->id);
+    }
+    
+    /**
+     *
+     * @test
+     */
+    public function anotherAuthorDeleteTest()
+    {
+        $content = new CMS_Content();
+        $content->name = 'test-content' . rand();
+        $content->title = 'Title ' . rand();
+        $content->description = 'It is my content description';
+        $content->author_id = $this->author2;
+        Test_Assert::assertTrue($content->create(), 'Impossible to create cms content');
+        // Author could not delete content created by another author
+        $this->expectException(Pluf_Exception_PermissionDenied::class);
+        $response = $this->client->delete('/cms/contents/' . $content->id);
+        $this->assertEquals($response->status_code, 403);
+        
+        // Content should remain unchanged
+        $this->expectException(Pluf_HTTP_Error404::class);
+        $afterContent = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $content->id);
+        $this->assertEquals($content->name, $afterContent->name);
+        $this->assertEquals($content->title, $afterContent->title);
+        $this->assertEquals($content->description, $afterContent->description);        
     }
 
 }
