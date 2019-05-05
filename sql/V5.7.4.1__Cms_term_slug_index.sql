@@ -1,12 +1,6 @@
+ALTER TABLE `cms_terms` CHANGE `slug` `slug` varchar(256) NULL DEFAULT NULL;
 
-CREATE TABLE `cms_term_metas` (
-  `id` mediumint(9) unsigned NOT NULL AUTO_INCREMENT,
-  `key` varchar(256) NOT NULL DEFAULT '',
-  `value` longtext DEFAULT NULL,
-  `term_id` mediumint(9) unsigned DEFAULT 0,
-  `tenant` mediumint(9) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `key_unique_idx` (`tenant`,`key`),
-  KEY `content_id_foreignkey_idx` (`term_id`),
-  KEY `tenant_foreignkey_idx` (`tenant`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*
+ * Create unique index on field 'slug' of term
+ */ 
+CREATE UNIQUE INDEX slug_unique_idx ON cms_terms (`tenant`, `slug`);
