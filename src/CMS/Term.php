@@ -63,9 +63,9 @@ class CMS_Term extends Pluf_Model
             ),
             'slug' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
-                'is_null' => false,
-                'size' => 200,
-                'default' => '',
+                'is_null' => true,
+                'unique' => true,
+                'size' => 256,
                 'editable' => true
             ),
             /*

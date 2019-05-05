@@ -49,6 +49,36 @@ function CMS_Shortcuts_GetNamedContentOr404 ($name)
 }
 
 /**
+ * Get term by its slug
+ * 
+ * @param string $slug
+ * @throws CMS_Exception_ObjectNotFound
+ * @return CMS_Term
+ */
+function CMS_Shortcuts_GetTermBySlugOr404 ($slug)
+{
+    $q = new Pluf_SQL('slug=%s', array(
+            $slug
+    ));
+    $item = new CMS_Term();
+    $item = $item->getList(
+            array(
+                    'filter' => $q->gen()
+            ));
+    if (isset($item) && $item->count() == 1) {
+        return $item[0];
+    }
+    if ($item->count() > 1) {
+        Pluf_Log::error(
+                sprintf(
+                        'more than one term exist with the slug $s', $slug));
+        return $item[0];
+    }
+    throw new CMS_Exception_ObjectNotFound(
+            "CMS term not found (Term slug:" . $slug . ")");
+}
+
+/**
  * یک نام جدید را بررسی می‌کند.
  *
  * نام یک محتوی باید در یک ملک به صورت انحصاری تعیین شود. بنابر این روال

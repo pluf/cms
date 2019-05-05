@@ -99,6 +99,11 @@ class Cms_Term_RestTest extends TestCase
      */
     public function createRestTest()
     {
+        // login
+        $response = $this->client->post('/api/v2/user/login', array(
+            'login' => 'test',
+            'password' => 'test'
+        ));
         $form = array(
             'name' => 'term-' . rand(),
             'slug' => 'slug-' . rand()
@@ -131,6 +136,11 @@ class Cms_Term_RestTest extends TestCase
      */
     public function updateRestTest()
     {
+        // login
+        $response = $this->client->post('/api/v2/user/login', array(
+            'login' => 'test',
+            'password' => 'test'
+        ));
         $item = new CMS_Term();
         $item->name = 'term-' . rand();
         $item->slug = 'slug-' . rand();
@@ -152,6 +162,11 @@ class Cms_Term_RestTest extends TestCase
      */
     public function deleteRestTest()
     {
+        // login
+        $response = $this->client->post('/api/v2/user/login', array(
+            'login' => 'test',
+            'password' => 'test'
+        ));
         $item = new CMS_Term();
         $item->name = 'term-' . rand();
         $item->slug = 'slug-' . rand();

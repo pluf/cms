@@ -83,7 +83,7 @@ class Term_ModelTest extends TestCase
      */
     public function slugUniquenessTest()
     {
-        $this->expectException(Pluf_Exception_BadRequest::class);
+        $this->expectException(Pluf_Exception::class);
         
         $item = new CMS_Term();
         $item->name = 'term-' . rand();
