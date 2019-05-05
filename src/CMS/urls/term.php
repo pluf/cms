@@ -27,9 +27,9 @@ return array(
             'model' => 'CMS_Term'
         )
     ),
-    /*
-     * Term
-     */
+    // --------------------------------------------------------------------
+    // Term
+    // --------------------------------------------------------------------
     array( // Create
         'regex' => '#^/terms$#',
         'model' => 'Pluf_Views',
@@ -50,6 +50,12 @@ return array(
         'params' => array(
             'model' => 'CMS_Term'
         )
+    ),
+    array( // Read (by slug)
+        'regex' => '#^/terms/(?P<slug>[^/]+)$#',
+        'model' => 'CMS_Views_Term',
+        'method' => 'getBySlug',
+        'http-method' => 'GET'
     ),
     array( // Read (list)
         'regex' => '#^/terms$#',
@@ -83,6 +89,80 @@ return array(
         ),
         'precond' => array(
             'CMS_Precondition::editorRequired'
+        )
+    ),
+    // --------------------------------------------------------------------
+    // Term Metas
+    // --------------------------------------------------------------------
+    array( // Read (list)
+        'regex' => '#^/terms/(?P<parentId>\d+)/metas$#',
+        'model' => 'Pluf_Views',
+        'method' => 'findManyToOne',
+        'http-method' => 'GET',
+        'params' => array(
+            'parent' => 'CMS_Term',
+            'parentKey' => 'term_id',
+            'model' => 'CMS_TermMeta'
+        )
+    ),
+    array( // Create (list)
+        'regex' => '#^/terms/(?P<parentId>\d+)/metas$#',
+        'model' => 'Pluf_Views',
+        'method' => 'createManyToOne',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        ),
+        'params' => array(
+            'parent' => 'CMS_Term',
+            'parentKey' => 'term_id',
+            'model' => 'CMS_TermMeta'
+            // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
+        )
+    ),
+
+    array( // Get
+        'regex' => '#^/terms/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
+        'model' => 'Pluf_Views',
+        'method' => 'getManyToOne',
+        'http-method' => 'GET',
+        'params' => array(
+            'parent' => 'CMS_Term',
+            'parentKey' => 'term_id',
+            'model' => 'CMS_TermMeta'
+        )
+    ),
+    array( // Update
+        'regex' => '#^/terms/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
+        'model' => 'Pluf_Views',
+        'method' => 'updateManyToOne',
+        'http-method' => array(
+            'POST',
+            'PUT'
+        ),
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        ),
+        'params' => array(
+            'parent' => 'CMS_Term',
+            'parentKey' => 'term_id',
+            'model' => 'CMS_TermMeta'
+            // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
+        )
+    ),
+    array( // Delete
+        'regex' => '#^/terms/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
+        'model' => 'Pluf_Views',
+        'method' => 'deleteManyToOne',
+        'http-method' => 'DELETE',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        ),
+        'params' => array(
+            'parent' => 'CMS_Term',
+            'parentKey' => 'term_id',
+            'model' => 'CMS_TermMeta'
+            // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
         )
     )
 );
