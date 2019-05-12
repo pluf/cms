@@ -5,6 +5,7 @@
 		"CMS_Content",
 		"CMS_ContentMeta",
 		"CMS_Term",
+		"CMS_TermMeta",
 		"CMS_TermTaxonomy"
 	],
 	"init": {

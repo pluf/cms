@@ -25,7 +25,7 @@ require_once 'Pluf.php';
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class Cms_REST_TermTaxonomyOfContentTest extends TestCase
+class Content_TermTaxonomyOfContentTest extends TestCase
 {
 
     private static $client = null;

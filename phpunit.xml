@@ -3,9 +3,10 @@
 	<testsuites>
 		<testsuite name="CMS">
 			<directory>tests/Cms/</directory>
-			<directory>TESTS/CMS_CONTENT/</directory>
-			<directory>tests/Cms_REST/</directory>
-			<directory>tests/Cms_Monitor/</directory>
+			<directory>TESTS/Content/</directory>
+			<directory>tests/Term/</directory>
+			<directory>tests/TermTaxonomy/</directory>
+			<directory>tests/Monitor/</directory>
 		</testsuite>
 	</testsuites>
 

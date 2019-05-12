@@ -25,7 +25,7 @@ require_once 'Pluf.php';
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class Cms_REST_MetadataOfContentTest extends TestCase
+class Content_MetadataOfContentTest extends TestCase
 {
 
     private static $client = null;
@@ -91,7 +91,7 @@ class Cms_REST_MetadataOfContentTest extends TestCase
      *
      * @test
      */
-    public function addingTermTaxonomyToContent()
+    public function addingMetaToContent()
     {
         // login
         $response = self::$client->post('/api/v2/user/login', array(
@@ -109,7 +109,7 @@ class Cms_REST_MetadataOfContentTest extends TestCase
         $content->mime_type = 'application/test';
         $content->create();
 
-        // Adding new term-taxonomy to the content
+        // Adding new content-meta to the content
         $form = array(
             'key' => 'meta.key.test' . rand(),
             'value' => 'meta.random.value' . rand()
@@ -120,8 +120,8 @@ class Cms_REST_MetadataOfContentTest extends TestCase
 
         // Getting list of meta of content
         $ttList = $content->get_metas_list();
-        Test_Assert::assertNotNull($ttList, 'There is no term-taxonomy for the content');
-        Test_Assert::assertTrue($ttList->count() > 0, 'There is no term-taxonomy related to the content');
+        Test_Assert::assertNotNull($ttList, 'There is no content-meta for the content');
+        Test_Assert::assertTrue($ttList->count() > 0, 'There is no content-meta related to the content');
     }
 
     /**
@@ -197,7 +197,7 @@ class Cms_REST_MetadataOfContentTest extends TestCase
         Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
         Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is empty');
 
-        // Delete term-taxonomoy from the content
+        // Delete content-meta from the content
         $response = self::$client->delete('/api/v2/cms/contents/' . $content->id . '/metas/' . $tt->id);
         Test_Assert::assertResponseNotNull($response, 'Result of delete request is empty');
         Test_Assert::assertResponseStatusCode($response, 200, 'Delete status code is not 200');
@@ -246,7 +246,7 @@ class Cms_REST_MetadataOfContentTest extends TestCase
         Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
         Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is empty');
 
-        // Delete term-taxonomoy from the content
+        // Delete content-meta from the content
         $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/metas/' . $tt->id, array(
             'key' => 'test-' . rand(),
             'value' => 'test-' . rand()

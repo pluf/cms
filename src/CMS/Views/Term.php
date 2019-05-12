@@ -16,38 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-use PHPUnit\Framework\TestCase;
 
-require_once 'Pluf.php';
-
-/**
- * @backupGlobals disabled
- * @backupStaticAttributes disabled
- */
-class CmsApiTest extends TestCase
+class CMS_Views_Term extends Pluf_Views
 {
 
     /**
-     * @before
+     * Returns a CMS_Term with given slug.
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @return CMS_Term
      */
-    public function setUp ()
+    public static function getBySlug($request, $match)
     {
-        Pluf::start(__DIR__. '/../conf/config.php');
-    }
-
-    /**
-     * @test
-     */
-    public function testClassInstance ()
-    {
-        $c = new CMS_Content();
-        $this->assertTrue(isset($c));
-        $c = new CMS_ContentMeta();
-        $this->assertTrue(isset($c));
-        $c = new CMS_Term();
-        $this->assertTrue(isset($c));
-        $c = new CMS_TermTaxonomy();
-        $this->assertTrue(isset($c));
+        Pluf::loadFunction('CMS_Shortcuts_GetTermBySlugOr404');
+        $term = CMS_Shortcuts_GetTermBySlugOr404($match['slug']);
+        return $term;
     }
 }
+
 

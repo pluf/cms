@@ -19,15 +19,6 @@
 return array(
     // ************************************************************* Schema
     array(
-        'regex' => '#^/terms/schema$#',
-        'model' => 'Pluf_Views',
-        'method' => 'getSchema',
-        'http-method' => 'GET',
-        'params' => array(
-            'model' => 'CMS_Term'
-        )
-    ),
-    array(
         'regex' => '#^/term-taxonomies/schema$#',
         'model' => 'Pluf_Views',
         'method' => 'getSchema',
@@ -141,64 +132,6 @@ return array(
         'http-method' => 'DELETE',
         'precond' => array(
             'CMS_Precondition::authorRequired'
-        )
-    ),
-    /*
-     * Term
-     */
-    array( // Create
-        'regex' => '#^/terms$#',
-        'model' => 'Pluf_Views',
-        'method' => 'createObject',
-        'http-method' => 'POST',
-        'params' => array(
-            'model' => 'CMS_Term'
-        ),
-        'precond' => array(
-            'CMS_Precondition::authorRequired'
-        )
-    ),
-    array( // Read
-        'regex' => '#^/terms/(?P<modelId>\d+)$#',
-        'model' => 'Pluf_Views',
-        'method' => 'getObject',
-        'http-method' => 'GET',
-        'params' => array(
-            'model' => 'CMS_Term'
-        )
-    ),
-    array( // Read (list)
-        'regex' => '#^/terms$#',
-        'model' => 'Pluf_Views',
-        'method' => 'findObject',
-        'http-method' => 'GET',
-        'params' => array(
-            'model' => 'CMS_Term'
-        )
-    ),
-    array( // Update
-        'regex' => '#^/terms/(?P<modelId>\d+)$#',
-        'model' => 'Pluf_Views',
-        'method' => 'updateObject',
-        'http-method' => 'POST',
-        'params' => array(
-            'model' => 'CMS_Term'
-        ),
-        'precond' => array(
-            'CMS_Precondition::editorRequired'
-        )
-    ),
-    array( // Delete
-        'regex' => '#^/terms/(?P<modelId>\d+)$#',
-        'model' => 'Pluf_Views',
-        'method' => 'deleteObject',
-        'http-method' => 'DELETE',
-        'params' => array(
-            'model' => 'CMS_Term',
-            'permanently' => true
-        ),
-        'precond' => array(
-            'CMS_Precondition::editorRequired'
         )
     ),
     /*

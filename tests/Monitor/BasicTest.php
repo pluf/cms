@@ -24,7 +24,7 @@ require_once 'Pluf.php';
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class User_Monitor_BasicsTest extends TestCase
+class Monitor_BasicsTest extends TestCase
 {
     
     private static $client = null;

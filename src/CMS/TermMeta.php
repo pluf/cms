@@ -19,59 +19,53 @@
  */
 
 /**
- * Holds the basic information about single term.
- * <ul>
- *   <li>id: is a unique ID for the term.</li>
- *   <li>name: is simply the name of the term.</li>
- *   <li>slug: is unique and is the name reduced to a URL friendly form.</li>
- *   <li>term_group: is a means of grouping together similar terms.</li>
- * </ul>
- * 
- * Base on https://wordpress.stackexchange.com/questions/23169/what-is-term-group-for-order-by-in-get-terms the field 
- * term_group practically never used. (So we are not added this field).
+ * Meta data for Terms
  *
- * @author hadi <mohammad.hadi.mansouri@dpq.co.ir>
- *        
+ * @author hadi
+ * 
  */
-class CMS_Term extends Pluf_Model
+class CMS_TermMeta extends Pluf_Model
 {
 
     /**
-     * مدل داده‌ای را بارگذاری می‌کند.
-     *
+     * Initial term meta data
+     * 
      * @see Pluf_Model::init()
      */
     function init()
     {
-        $this->_a['table'] = 'cms_terms';
+        $this->_a['table'] = 'cms_term_metas';
         $this->_a['cols'] = array(
-            // ID
+            // Identifier
             'id' => array(
                 'type' => 'Pluf_DB_Field_Sequence',
-                'blank' => false,
-                'verbose' => 'first name',
-                'help_text' => 'id',
+                'is_null' => false,
                 'editable' => false
             ),
             // Fields
-            'name' => array(
+            'key' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
                 'is_null' => false,
-                'size' => 200,
+                'size' => 256,
+                'unique' => true,
+                'editable' => true
+            ),
+            'value' => array(
+                'type' => 'Pluf_DB_Field_Text',
+                'is_null' => true,
                 'default' => '',
                 'editable' => true
             ),
-            'slug' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+            // Foreign keys
+            'term_id' => array(
+                'type' => 'Pluf_DB_Field_Foreignkey',
+                'model' => 'CMS_Term',
+                'name' => 'term',
+                'graphql_name' => 'term',
+                'relate_name' => 'metas',
                 'is_null' => true,
-                'unique' => true,
-                'size' => 256,
                 'editable' => true
             ),
-            /*
-             * Foreign keys
-             */
         );
     }
 }
-

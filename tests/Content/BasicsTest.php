@@ -25,7 +25,7 @@ require_once 'Pluf.php';
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class Cms_REST_BasicsTest extends TestCase
+class Content_BasicsTest extends TestCase
 {
 
     private static $client = null;

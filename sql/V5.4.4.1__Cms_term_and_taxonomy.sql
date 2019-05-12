@@ -6,7 +6,7 @@ CREATE TABLE `cms_terms` (
   `tenant` mediumint(9) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `tenant_foreignkey_idx` (`tenant`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `cms_term_taxonomy` (
   `id` mediumint(9) unsigned NOT NULL AUTO_INCREMENT,
@@ -21,7 +21,7 @@ CREATE TABLE `cms_term_taxonomy` (
   KEY `term_id_foreignkey_idx` (`term_id`),
   KEY `parent_id_foreignkey_idx` (`parent_id`),
   KEY `tenant_foreignkey_idx` (`tenant`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `cms_content_cms_termtaxonomy_assoc` (
   `cms_termtaxonomy_id` mediumint(9) unsigned NOT NULL DEFAULT 0,

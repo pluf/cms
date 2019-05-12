@@ -25,7 +25,7 @@ require_once 'Pluf.php';
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class CmsContentCrudTest extends TestCase
+class Cms_CoreTest extends TestCase
 {
 
     /**

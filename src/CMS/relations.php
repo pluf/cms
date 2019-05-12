@@ -29,11 +29,15 @@ return array(
     ),
     'CMS_TermTaxonomy' => array(
         'relate_to' => array(
-            'CMS_Term',
-            'User_Account'
+            'CMS_Term'
         ),        
         'relate_to_many' => array(
             'CMS_Content'
         )  
-    )
+    ),
+    'CMS_TermMeta' => array(
+        'relate_to' => array(
+            'CMS_Term'
+        )
+    ),
 );

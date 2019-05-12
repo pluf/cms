@@ -1,7 +1,8 @@
 <?php
 $paths = array(
     'urls/content.php',
-    'urls/term-taxonomy.php'
+    'urls/term-taxonomy.php',
+    'urls/term.php'
 );
 
 $cmsApi = array();
