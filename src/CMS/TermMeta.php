@@ -22,14 +22,14 @@
  * Meta data for Terms
  *
  * @author hadi
- * 
+ *
  */
 class CMS_TermMeta extends Pluf_Model
 {
 
     /**
      * Initial term meta data
-     * 
+     *
      * @see Pluf_Model::init()
      */
     function init()
@@ -62,6 +62,7 @@ class CMS_TermMeta extends Pluf_Model
                 'model' => 'CMS_Term',
                 'name' => 'term',
                 'graphql_name' => 'term',
+                'graphql_field' => true,
                 'relate_name' => 'metas',
                 'is_null' => true,
                 'editable' => true
