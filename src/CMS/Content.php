@@ -23,7 +23,7 @@
  *
  * @author hadi <mohammad.hadi.mansouri@dpq.co.ir>
  * @author maso <mostafa.barmshory@dpq.co.ir>
- *        
+ *
  */
 class CMS_Content extends Pluf_Model
 {
@@ -82,7 +82,7 @@ class CMS_Content extends Pluf_Model
                 'editable' => true
             ),
             'file_path' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Pluf_DB_Field_File',
                 'is_null' => false,
                 'size' => 250,
                 'verbose' => 'File path',
