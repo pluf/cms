@@ -16,31 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 Pluf::loadFunction('CMS_Shortcuts_CleanName');
 
 /**
  * ایجاد یک محتوای جدید
  *
  * با استفاده از این فرم می‌توان یک محتوای جدید را ایجاد کرد.
- * 
- * @author hadi <mohammad.hadi.mansouri@dpq.co.ir>
  *
+ * @author hadi <mohammad.hadi.mansouri@dpq.co.ir>
+ *        
  */
 class CMS_Form_ContentCreate extends Pluf_Form_Model
 {
 
     public $tenant = null;
+
     public $user = null;
 
-    public function initFields ($extra = array())
+    public function initFields($extra = array())
     {
         $this->tenant = Pluf_Tenant::current();
         $this->user = $extra['user'];
-        parent::initFields($extra);       
+        parent::initFields($extra);
     }
 
-    public function clean_name ()
+    public function clean_name()
     {
         $name = $this->cleaned_data['name'];
         if (empty($name))
@@ -48,27 +48,26 @@ class CMS_Form_ContentCreate extends Pluf_Form_Model
         return CMS_Shortcuts_CleanName($name);
     }
 
-    function save ($commit = true)
+    function save($commit = true)
     {
         if (! $this->isValid()) {
-            throw new Pluf_Exception_Form(
-                    'cannot save the content from an invalid form', $this);
+            throw new Pluf_Exception_Form('cannot save the content from an invalid form', $this);
         }
         // Create the content
         $content = new CMS_Content();
         $content->setFromFormData($this->cleaned_data);
-        $content->file_path = Pluf::f('upload_path') . '/' . $this->tenant->id .
-                 '/cms';
-        if (! is_dir($content->file_path)) {
-            if (false == @mkdir($content->file_path, 0777, true)) {
-                throw new Pluf_Form_Invalid(
-                        'An error occured when creating the upload path. Please try to send the file again.');
+        $cmsPath = Pluf::f('upload_path') . '/' . $this->tenant->id . '/cms';
+        if (! is_dir($cmsPath)) {
+            if (false == @mkdir($cmsPath, 0777, true)) {
+                throw new Pluf_Form_Invalid('An error occured when creating the upload path. Please try to send the file again.');
             }
         }
         $content->author_id = $this->user;
         $content->tenant = $this->tenant;
         if ($commit) {
             $content->create();
+            $content->file_path = Pluf::f('upload_path') . '/' . $this->tenant->id . '/cms/' . $content->id;
+            $content->update();
         }
         return $content;
     }

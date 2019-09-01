@@ -37,7 +37,7 @@ class CMS_Form_ContentUpdate extends Pluf_Form_Model
             'required' => false,
             'max_size' => Pluf::f('upload_max_size', 2097152),
             'move_function_params' => array(
-                'upload_path' => $this->model->file_path,
+                'upload_path' => Pluf::f('upload_path') . '/' . $this->tenant->id . '/cms',
                 'file_name' => $this->model->id,
                 'upload_path_create' => true,
                 'upload_overwrite' => true
