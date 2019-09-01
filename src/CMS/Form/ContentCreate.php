@@ -56,7 +56,7 @@ class CMS_Form_ContentCreate extends Pluf_Form_Model
         // Create the content
         $content = new CMS_Content();
         $content->setFromFormData($this->cleaned_data);
-        $cmsPath = Pluf::f('upload_path') . '/' . $this->tenant->id . '/cms';
+        $cmsPath = Pluf_Tenant::storagePath() . '/cms';
         if (! is_dir($cmsPath)) {
             if (false == @mkdir($cmsPath, 0777, true)) {
                 throw new Pluf_Form_Invalid('An error occured when creating the upload path. Please try to send the file again.');
