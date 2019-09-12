@@ -97,7 +97,7 @@ class CMS_Content extends Pluf_Model
                 'default' => 'unknown',
                 'verbose' => 'file name',
                 'help_text' => 'Content file name',
-                'editable' => false
+                'editable' => true
             ),
             'file_size' => array(
                 'type' => 'Pluf_DB_Field_Integer',
