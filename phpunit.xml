@@ -3,7 +3,7 @@
 	<testsuites>
 		<testsuite name="CMS">
 			<directory>tests/Cms/</directory>
-			<directory>TESTS/Content/</directory>
+			<directory>tests/Content/</directory>
 			<directory>tests/Term/</directory>
 			<directory>tests/TermTaxonomy/</directory>
 			<directory>tests/Monitor/</directory>

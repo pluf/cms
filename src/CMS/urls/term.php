@@ -164,5 +164,78 @@ return array(
             'model' => 'CMS_TermMeta'
             // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
         )
+    ),
+
+    // --------------------------------------------------------------------
+    // Term -> term_taxonomies
+    // --------------------------------------------------------------------
+    array( // Read (list)
+        'regex' => '#^/terms/(?P<parentId>\d+)/term-taxonomies$#',
+        'model' => 'CMS_Views_Term',
+        'method' => 'findManyToOne',
+        'http-method' => 'GET',
+        'params' => array(
+            'parent' => 'CMS_Term',
+            'parentKey' => 'term_id',
+            'model' => 'CMS_TermTaxonomy'
+        )
+    ),
+    array( // Create (list)
+        'regex' => '#^/terms/(?P<parentId>\d+)/term-taxonomies$#',
+        'model' => 'CMS_Views_Term',
+        'method' => 'createManyToOne',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        ),
+        'params' => array(
+            'parent' => 'CMS_Term',
+            'parentKey' => 'term_id',
+            'model' => 'CMS_TermTaxonomy'
+        )
+    ),
+
+    array( // Get
+        'regex' => '#^/terms/(?P<parentId>\d+)/term-taxonomies/(?P<modelId>\d+)$#',
+        'model' => 'CMS_Views_Term',
+        'method' => 'getManyToOne',
+        'http-method' => 'GET',
+        'params' => array(
+            'parent' => 'CMS_Term',
+            'parentKey' => 'term_id',
+            'model' => 'CMS_TermTaxonomy'
+        )
+    ),
+    array( // Update
+        'regex' => '#^/terms/(?P<parentId>\d+)/term-taxonomies/(?P<modelId>\d+)$#',
+        'model' => 'CMS_Views_Term',
+        'method' => 'updateManyToOne',
+        'http-method' => array(
+            'POST',
+            'PUT'
+        ),
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        ),
+        'params' => array(
+            'parent' => 'CMS_Term',
+            'parentKey' => 'term_id',
+            'model' => 'CMS_TermTaxonomy'
+        )
+    ),
+    array( // Delete
+        'regex' => '#^/terms/(?P<parentId>\d+)/term-taxonomies/(?P<modelId>\d+)$#',
+        'model' => 'CMS_Views_Term',
+        'method' => 'deleteManyToOne',
+        'http-method' => 'DELETE',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        ),
+        'params' => array(
+            'parent' => 'CMS_Term',
+            'parentKey' => 'term_id',
+            'model' => 'CMS_TermTaxonomy'
+        )
     )
+
 );
