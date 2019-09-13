@@ -192,7 +192,7 @@ class Cms_Term_RestTest extends TestCase
 
     /**
      * Getting a term by its slug
-     * 
+     *
      * @test
      */
     public function getTermBySlugTest(){
@@ -210,7 +210,7 @@ class Cms_Term_RestTest extends TestCase
         $this->assertEquals($actual['name'], $item->name);
         $this->assertEquals($actual['slug'], $item->slug);
     }
-    
+
     /**
      *
      * CRUD (create,read,update,delete) on metas of term
@@ -271,6 +271,70 @@ class Cms_Term_RestTest extends TestCase
 
         // Getting list of metas
         $response = $this->client->get('/api/v2/cms/terms/' . $term->id . '/metas');
+        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        Test_Assert::assertResponseEmptyPaginateList($response, 'The list is not empty');
+    }
+
+    /**
+     *
+     * CRUD (create,read,update,delete) on taxonomies of term
+     *
+     * @test
+     */
+    public function crudOnTermTaxonomyOfTermTest()
+    {
+
+        // login
+        $response = $this->client->post('/api/v2/user/login', array(
+            'login' => 'test',
+            'password' => 'test'
+        ));
+        $this->assertNotNull($response);
+        $this->assertEquals($response->status_code, 200);
+
+        // Create term
+        $term = new CMS_Term();
+        $term->name = 'test-term' . rand();
+        $term->slug = 'slug-' . rand();
+        $term->create();
+
+        // Adding term-meta
+        $key = 'meta-' . rand();
+        $value = 'meta value';
+        $form = array(
+            'taxonomy' => 'test',
+            'value' => $value
+        );
+        $response = $this->client->post('/api/v2/cms/terms/' . $term->id . '/term-taxonomies', $form);
+        $this->assertNotNull($response);
+        $this->assertEquals($response->status_code, 200);
+        Test_Assert::assertResponseAsModel($response);
+        $actual = json_decode($response->content, true);
+        $this->assertEquals($actual['taxonomy'], $form['taxonomy']);
+
+        $tm = new CMS_TermTaxonomy($actual['id']);
+        $this->assertFalse($tm->isAnonymous(), 'TermTaxonomy is not created!');
+
+        // Getting the term-taxonomies
+        $response = $this->client->get('/api/v2/cms/terms/' . $term->id . '/term-taxonomies/' . $tm->id);
+        $this->assertNotNull($response);
+        $this->assertEquals($response->status_code, 200);
+        Test_Assert::assertResponseAsModel($response);
+
+        // Getting list of taxonomies
+        $response = $this->client->get('/api/v2/cms/terms/' . $term->id . '/term-taxonomies');
+        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is empty');
+
+        // Deleting taxonomies from the term
+        $response = $this->client->delete('/api/v2/cms/terms/' . $term->id . '/term-taxonomies/' . $tm->id);
+        Test_Assert::assertResponseNotNull($response, 'Result of delete request is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Delete status code is not 200');
+
+        // Getting list of taxonomies
+        $response = $this->client->get('/api/v2/cms/terms/' . $term->id . '/term-taxonomies');
         Test_Assert::assertResponseNotNull($response, 'Find result is empty');
         Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
         Test_Assert::assertResponseEmptyPaginateList($response, 'The list is not empty');

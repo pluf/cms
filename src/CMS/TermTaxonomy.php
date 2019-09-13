@@ -35,7 +35,7 @@
  * <li>count: tracks how many objects are associated with the term+taxonomy pair.</li>
  *
  * @author hadi <mohammad.hadi.mansouri@dpq.co.ir>
- *        
+ *
  */
 class CMS_TermTaxonomy extends Pluf_Model
 {
