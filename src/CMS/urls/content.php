@@ -83,7 +83,7 @@ return array(
         'http-method' => 'GET',
         // Cache apram
         'cacheable' => true,
-        'revalidate' => true,
+        'revalidate' => false,
         'intermediate_cache' => true,
         'max_age' => 25000
     ),
@@ -103,7 +103,7 @@ return array(
         'http-method' => 'GET',
         // Cache apram
         'cacheable' => true,
-        'revalidate' => true,
+        'revalidate' => false,
         'intermediate_cache' => true,
         'max_age' => 25000
     ),
