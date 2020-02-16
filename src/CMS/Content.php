@@ -28,6 +28,8 @@
 class CMS_Content extends Pluf_Model
 {
 
+    protected $_internal = false;
+    
     /**
      * مدل داده‌ای را بارگذاری می‌کند.
      *
@@ -204,6 +206,10 @@ class CMS_Content extends Pluf_Model
      */
     function preSave($create = false)
     {
+        if($this->_internal){
+            // this function do nothing in the internal state.
+            return;
+        }
         if ($this->id == '') {
             $this->creation_dtime = gmdate('Y-m-d H:i:s');
         }
@@ -222,6 +228,15 @@ class CMS_Content extends Pluf_Model
             $fileInfo = Pluf_FileUtil::getMimeType($this->file_name);
             $this->mime_type = $fileInfo[0];
         }
+    }
+    
+    function internalUpdate($where = ''){
+        $this->_internal = true;
+        try{
+            $this->update($where);
+        }catch (Pluf_Exception $e){
+        }
+        $this->_internal = false;
     }
 
     /**

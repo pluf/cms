@@ -150,17 +150,21 @@ class CMS_Views extends Pluf_Views
     public function download($request, $match)
     {
         // GET data
+        $content = null;
         if (array_key_exists('modelId', $match)) {
             $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['modelId']);
         } else {
             $content = CMS_Shortcuts_GetNamedContentOr404($match['name']);
         }
         // Do
-        $content->downloads += 1;
-        $content->update();
-        $response = new Pluf_HTTP_Response_File($content->getAbsloutPath(), $content->mime_type);
-        $response->headers['Content-Disposition'] = sprintf('attachment; filename="%s"', $content->file_name);
-        return $response;
+        try{
+            $response = new Pluf_HTTP_Response_File($content->getAbsloutPath(), $content->mime_type);
+            $response->headers['Content-Disposition'] = sprintf('attachment; filename="%s"', $content->file_name);
+            return $response;
+        }finally {
+            $content->downloads += 1;
+            $content->internalUpdate();
+        }
     }
 
     /**
