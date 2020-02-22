@@ -145,6 +145,13 @@ class CMS_Content extends Pluf_Model
                 'help_text' => 'number of comments on the content',
                 'editable' => false
             ),
+            'cache_policy' => array(
+                'type' => 'Pluf_DB_Field_Varchar',
+                'is_null' => true,
+                'size' => 512,
+                'default' => 'max-age=21600', // can be cached by browser and any intermediary caches for up to 6 hour
+                'editable' => true
+            ),
             'creation_dtime' => array(
                 'type' => 'Pluf_DB_Field_Datetime',
                 'blank' => true,
@@ -167,7 +174,7 @@ class CMS_Content extends Pluf_Model
                 'model' => 'User_Account',
                 'is_null' => false,
                 'name' => 'author',
-                'relate_name' => 'cms_contents',
+                'relate_name' => 'authored_contents',
                 'graphql_name' => 'author',
                 'editable' => false
             ),
@@ -180,7 +187,7 @@ class CMS_Content extends Pluf_Model
                 'relate_name' => 'children',
                 'editable' => true,
                 'readable' => true
-            ),
+            )
         );
 
         $this->_a['idx'] = array(
