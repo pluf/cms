@@ -187,6 +187,15 @@ class CMS_Content extends Pluf_Model
                 'relate_name' => 'children',
                 'editable' => true,
                 'readable' => true
+            ),
+            'members' => array(
+                'type' => 'Pluf_DB_Field_Manytomany',
+                'model' => 'User_Account',
+                'name' => 'members',
+                'graphql_name' => 'members',
+                'relate_name' => 'member_contents',
+                'is_null' => true,
+                'editable' => false
             )
         );
 
