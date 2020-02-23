@@ -20,6 +20,9 @@ return array(
     'CMS_Content' => array(
         'relate_to' => array(
             'User_Account'
+        ),
+        'relate_to_many' => array(
+            'User_Account'
         )
     ),
     'CMS_ContentMeta' => array(
@@ -40,4 +43,10 @@ return array(
             'CMS_Term'
         )
     ),
+    'CMS_ContentHistory' => array(
+        'relate_to' => array(
+            'CMS_Content',
+            'User_Account'
+        )
+    )
 );
