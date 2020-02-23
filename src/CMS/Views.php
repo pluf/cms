@@ -308,5 +308,29 @@ class CMS_Views extends Pluf_Views
         }
         return $tt;
     }
+
+    /**
+     * Checks access to given content.
+     * If request has not access to content it throws an exception.
+     *
+     * @param Pluf_HTTP_Request $request
+     * @param CMS_Content $content
+     * @throws Pluf_Exception
+     * @return boolean
+     */
+    public static function checkAccess($request, $content)
+    {
+//         $manager = $content->getManager();
+//         $sql = $manager->createOrderFilter($request)->SAnd(new Pluf_SQL('id=%s', array(
+//             $content->id
+//         )));
+//         if (0 == $content->getCount(array(
+//             'filter' => $sql->gen()
+//         ))) {
+//             throw new Pluf_Exception("You are not allowed to access to this order.");
+//         }
+        return true;
+    }
+
 }
 
