@@ -15,7 +15,11 @@ class CMS_Views_ContentHistory extends Pluf_Views
      */
     public static function find($request, $match)
     {
-        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['preantId']);
+        if (isset($match['name'])) {
+            $content = CMS_Shortcuts_GetNamedContentOr404($match['name']);
+        } else {
+            $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['contentId']);
+        }
         CMS_Views::checkAccess($request, $content);
         $pag = new Pluf_Paginator(new CMS_ContentHistory());
         $pag->forced_where = new Pluf_SQL('`content_id`=' . $content->id);
@@ -54,14 +58,18 @@ class CMS_Views_ContentHistory extends Pluf_Views
      */
     public static function get($request, $match)
     {
-        $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['parentId']);
+        if (isset($match['name'])) {
+            $content = CMS_Shortcuts_GetNamedContentOr404($match['name']);
+        } else {
+            $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['contentId']);
+        }
         CMS_Views::checkAccess($request, $content);
         /**
          *
          * @var CMS_ContentHistory $contentHistory
          */
-        $contentHistory = Pluf_Shortcuts_GetObjectOr404('CMS_ContentHistory', $match['modelId']);
-        if ($contentHistory->content_id !== $content-id) {
+        $contentHistory = Pluf_Shortcuts_GetObjectOr404('CMS_ContentHistory', $match['historyId']);
+        if ($contentHistory->content_id !== $content->id) {
             throw new Pluf_HTTP_Error404('Content with id ' . $content->id . ' has no history with id ' . $contentHistory->id);
         }
         return $contentHistory;

@@ -107,7 +107,31 @@ return array(
         'intermediate_cache' => true,
         'max_age' => 25000
     ),
-
+    // --------------------------------------------------------------------
+    // Processing Order
+    // --------------------------------------------------------------------
+    array( // get possible actions
+        'regex' => '#^/contents/(?P<contentId>\d+)/possible-transitions$#',
+        'model' => 'CMS_Views',
+        'method' => 'actions',
+        'http-method' => 'GET'
+    ),
+    array( // get possible actions (by name)
+        'regex' => '#^/contents/(?P<name>[^/]+)/possible-transitions$#',
+        'model' => 'CMS_Views',
+        'method' => 'actions',
+        'http-method' => 'GET'
+    ),
+    array( // do action on order
+        'regex' => '#^/contents/(?P<contentId>\d+)/transitions$#',
+        'model' => 'CMS_Views',
+        'method' => 'doAction',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::editorRequired'
+        )
+    ),
+    
     // --------------------------------------------------------------------
     // Term-Taxonomies of Content
     // --------------------------------------------------------------------
@@ -291,7 +315,7 @@ return array(
     //*************************************************************
     
     array( // Read (by name)
-        'regex' => '#^/contents/(?P<name>.+)$#',
+        'regex' => '#^/contents/(?P<name>[^/]+)$#',
         'model' => 'CMS_Views',
         'method' => 'get',
         'http-method' => 'GET'
