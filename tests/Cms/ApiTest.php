@@ -44,9 +44,13 @@ class CmsApiTest extends TestCase
         $this->assertTrue(isset($c));
         $c = new CMS_ContentMeta();
         $this->assertTrue(isset($c));
+        $c = new CMS_ContentHistory();
+        $this->assertTrue(isset($c));
         $c = new CMS_Term();
         $this->assertTrue(isset($c));
         $c = new CMS_TermTaxonomy();
+        $this->assertTrue(isset($c));
+        $c = new CMS_TermMeta();
         $this->assertTrue(isset($c));
     }
 }
