@@ -116,13 +116,20 @@ class CMS_Content extends Pluf_Model
                 'help_text' => 'content downloads number',
                 'editable' => false
             ),
-            'status' => array(
+            'state' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
                 'is_null' => true,
                 'size' => 64,
-                'default' => 'published',
+                'default' => '',
                 'editable' => false
             ),
+//             'manager' => array(
+//                 'type' => 'Pluf_DB_Field_Varchar',
+//                 'blank' => true,
+//                 'size' => 100,
+//                 'editable' => false,
+//                 'readable' => true
+//             ),
             'password' => array(
                 'type' => 'Pluf_DB_Field_Password',
                 'is_null' => true,
@@ -288,6 +295,28 @@ class CMS_Content extends Pluf_Model
     public function getAbsloutPath()
     {
         return $this->file_path;
+    }
+    
+//     /**
+//      * Returns an object which manages the content. This function find the manager from the setting of the tenant.
+//      * The setting key which this function looks to find the manager of the content is named 'Cms.Content.Manager'.
+//      * If there is no setting in the tenant with this key, this function uses the class 'Editoral'.
+//      *
+//      * @return CMS_Content_Manager
+//      */
+//     function getManager()
+//     {
+//         $managerClassName = $this->manager;
+//         if (! isset($managerClassName) || empty($managerClassName)){
+//             $managerClassName = Tenant_Service::setting('Cms.Content.Manager', 'Editoral');
+//             $this->manager = $managerClassName;
+//         }
+//         $managerClassName = 'CMS_Content_Manager_'.$managerClassName;
+//         return new $managerClassName();
+//     }
+    function getManager()
+    {
+        return new CMS_Content_Manager_Editoral();
     }
     
 }

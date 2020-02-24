@@ -57,6 +57,8 @@ class CMS_Views extends Pluf_Views
             $content->delete();
             throw $e;
         }
+        $manager = $content->getManager();
+        $manager->apply($content, 'create');
         return $content;
     }
 
@@ -157,11 +159,11 @@ class CMS_Views extends Pluf_Views
             $content = CMS_Shortcuts_GetNamedContentOr404($match['name']);
         }
         // Do
-        try{
+        try {
             $response = new Pluf_HTTP_Response_File($content->getAbsloutPath(), $content->mime_type);
             $response->headers['Content-Disposition'] = sprintf('attachment; filename="%s"', $content->file_name);
             return $response;
-        }finally {
+        } finally {
             $content->downloads += 1;
             $content->internalUpdate();
         }
@@ -309,6 +311,10 @@ class CMS_Views extends Pluf_Views
         return $tt;
     }
 
+    // ***********************************************************
+    // Workflow
+    // **********************************************************
+
     /**
      * Checks access to given content.
      * If request has not access to content it throws an exception.
@@ -320,17 +326,61 @@ class CMS_Views extends Pluf_Views
      */
     public static function checkAccess($request, $content)
     {
-//         $manager = $content->getManager();
-//         $sql = $manager->createOrderFilter($request)->SAnd(new Pluf_SQL('id=%s', array(
-//             $content->id
-//         )));
-//         if (0 == $content->getCount(array(
-//             'filter' => $sql->gen()
-//         ))) {
-//             throw new Pluf_Exception("You are not allowed to access to this order.");
-//         }
+        $manager = $content->getManager();
+        $sql = $manager->createContentFilter($request)->SAnd(new Pluf_SQL('id=%s', array(
+            $content->id
+        )));
+        if (0 == $content->getCount(array(
+            'filter' => $sql->gen()
+        ))) {
+            throw new Pluf_Exception("You are not allowed to access to this content.");
+        }
         return true;
     }
 
+    /**
+     * Gets lit of possible actions
+     *
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @return array an array of transitions
+     */
+    public function actions($request, $match)
+    {
+        if (isset($match['name'])) {
+            $content = CMS_Shortcuts_GetNamedContentOr404($match['name']);
+        } else {
+            $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['contentId']);
+        }
+        self::checkAccess($request, $content);
+        $items = $content->getManager()->transitions($content);
+        $page = array(
+            'items' => $items,
+            'counts' => count($items),
+            'current_page' => 1,
+            'items_per_page' => count($items),
+            'page_number' => 1
+        );
+
+        return $page;
+    }
+
+    public static function doAction($request, $match)
+    {
+        if (isset($match['name'])) {
+            $content = CMS_Shortcuts_GetNamedContentOr404($match['name']);
+        } else {
+            $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['contentId']);
+        }
+        self::checkAccess($request, $content);
+        $action = $request->REQUEST['action'];
+        $manager = $content->getManager();
+        if ($manager->apply($content, $action, true)) {
+            $updatedContent = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $content->id);
+            return $updatedContent;
+        }
+        return new Pluf_Exception('An error is occurred while processing content');
+    }
+   
 }
 
