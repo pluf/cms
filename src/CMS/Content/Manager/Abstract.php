@@ -17,15 +17,15 @@ abstract class CMS_Content_Manager_Abstract implements CMS_Content_Manager
      * {@inheritdoc}
      * @see CMS_Content_Manager::apply()
      */
-    public function apply($order, $action, $save = false)
+    public function apply($content, $action, $save = false)
     {
         $machine = new Workflow_Machine();
         $machine->setStates($this->getStates())
             ->setSignals(array('CMS_Content::stateChanged'))
             ->setProperty('state')
-            ->apply($order, $action);
+            ->apply($content, $action);
         if ($save) {
-            return $order->update();
+            return $content->update();
         }
         return true;
     }
