@@ -19,7 +19,8 @@
 	"require" : {
 		"pluf/core" : "5.12.x",
 		"pluf/user" : "5.12.x",
-		"pluf/monitor" : "5.12.x"
+		"pluf/monitor" : "5.12.x",
+		"pluf/workflow" : "5.12.x"
 	},
 	"require-dev" : {
 		"pluf/test" : "5.12.x",

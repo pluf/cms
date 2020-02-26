@@ -28,6 +28,8 @@
 class CMS_Content extends Pluf_Model
 {
 
+    protected $_internal = false;
+    
     /**
      * مدل داده‌ای را بارگذاری می‌کند.
      *
@@ -114,13 +116,20 @@ class CMS_Content extends Pluf_Model
                 'help_text' => 'content downloads number',
                 'editable' => false
             ),
-            'status' => array(
+            'state' => array(
                 'type' => 'Pluf_DB_Field_Varchar',
                 'is_null' => true,
                 'size' => 64,
-                'default' => 'published',
+                'default' => '',
                 'editable' => false
             ),
+//             'manager' => array(
+//                 'type' => 'Pluf_DB_Field_Varchar',
+//                 'blank' => true,
+//                 'size' => 100,
+//                 'editable' => false,
+//                 'readable' => true
+//             ),
             'password' => array(
                 'type' => 'Pluf_DB_Field_Password',
                 'is_null' => true,
@@ -142,6 +151,13 @@ class CMS_Content extends Pluf_Model
                 'default' => 0,
                 'help_text' => 'number of comments on the content',
                 'editable' => false
+            ),
+            'cache_policy' => array(
+                'type' => 'Pluf_DB_Field_Varchar',
+                'is_null' => true,
+                'size' => 512,
+                'default' => 'max-age=21600', // can be cached by browser and any intermediary caches for up to 6 hour
+                'editable' => true
             ),
             'creation_dtime' => array(
                 'type' => 'Pluf_DB_Field_Datetime',
@@ -165,7 +181,7 @@ class CMS_Content extends Pluf_Model
                 'model' => 'User_Account',
                 'is_null' => false,
                 'name' => 'author',
-                'relate_name' => 'cms_contents',
+                'relate_name' => 'authored_contents',
                 'graphql_name' => 'author',
                 'editable' => false
             ),
@@ -179,6 +195,15 @@ class CMS_Content extends Pluf_Model
                 'editable' => true,
                 'readable' => true
             ),
+            'members' => array(
+                'type' => 'Pluf_DB_Field_Manytomany',
+                'model' => 'User_Account',
+                'name' => 'members',
+                'graphql_name' => 'members',
+                'relate_name' => 'member_contents',
+                'is_null' => true,
+                'editable' => false
+            )
         );
 
         $this->_a['idx'] = array(
@@ -204,6 +229,10 @@ class CMS_Content extends Pluf_Model
      */
     function preSave($create = false)
     {
+        if($this->_internal){
+            // this function do nothing in the internal state.
+            return;
+        }
         if ($this->id == '') {
             $this->creation_dtime = gmdate('Y-m-d H:i:s');
         }
@@ -222,6 +251,15 @@ class CMS_Content extends Pluf_Model
             $fileInfo = Pluf_FileUtil::getMimeType($this->file_name);
             $this->mime_type = $fileInfo[0];
         }
+    }
+    
+    function internalUpdate($where = ''){
+        $this->_internal = true;
+        try{
+            $this->update($where);
+        }catch (Pluf_Exception $e){
+        }
+        $this->_internal = false;
     }
 
     /**
@@ -257,6 +295,28 @@ class CMS_Content extends Pluf_Model
     public function getAbsloutPath()
     {
         return $this->file_path;
+    }
+    
+//     /**
+//      * Returns an object which manages the content. This function find the manager from the setting of the tenant.
+//      * The setting key which this function looks to find the manager of the content is named 'Cms.Content.Manager'.
+//      * If there is no setting in the tenant with this key, this function uses the class 'Editoral'.
+//      *
+//      * @return CMS_Content_Manager
+//      */
+//     function getManager()
+//     {
+//         $managerClassName = $this->manager;
+//         if (! isset($managerClassName) || empty($managerClassName)){
+//             $managerClassName = Tenant_Service::setting('Cms.Content.Manager', 'Editoral');
+//             $this->manager = $managerClassName;
+//         }
+//         $managerClassName = 'CMS_Content_Manager_'.$managerClassName;
+//         return new $managerClassName();
+//     }
+    function getManager()
+    {
+        return new CMS_Content_Manager_Editoral();
     }
     
 }

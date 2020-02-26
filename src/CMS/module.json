@@ -4,6 +4,7 @@
 	"model": [
 		"CMS_Content",
 		"CMS_ContentMeta",
+		"CMS_ContentHistory",
 		"CMS_Term",
 		"CMS_TermMeta",
 		"CMS_TermTaxonomy"

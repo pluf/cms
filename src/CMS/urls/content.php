@@ -107,7 +107,31 @@ return array(
         'intermediate_cache' => true,
         'max_age' => 25000
     ),
-
+    // --------------------------------------------------------------------
+    // Processing Order
+    // --------------------------------------------------------------------
+    array( // get possible actions
+        'regex' => '#^/contents/(?P<contentId>\d+)/possible-transitions$#',
+        'model' => 'CMS_Views',
+        'method' => 'actions',
+        'http-method' => 'GET'
+    ),
+    array( // get possible actions (by name)
+        'regex' => '#^/contents/(?P<name>[^/]+)/possible-transitions$#',
+        'model' => 'CMS_Views',
+        'method' => 'actions',
+        'http-method' => 'GET'
+    ),
+    array( // do action on order
+        'regex' => '#^/contents/(?P<contentId>\d+)/transitions$#',
+        'model' => 'CMS_Views',
+        'method' => 'doAction',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::editorRequired'
+        )
+    ),
+    
     // --------------------------------------------------------------------
     // Term-Taxonomies of Content
     // --------------------------------------------------------------------
@@ -245,8 +269,53 @@ return array(
         )
     ),
 
+    // --------------------------------------------------------------------
+    // Content Members
+    // --------------------------------------------------------------------    
+    array( // Read (List)
+        'regex' => '#^/contents/(?P<parentId>\d+)/members$#',
+        'model' => 'CMS_Views_ContentMember',
+        'method' => 'members',
+        'http-method' => 'GET'
+    ),
+    array( // Read
+        'regex' => '#^/contents/(?P<parentId>\d+)/members/(?P<modelId>\d+)$#',
+        'model' => 'CMS_Views_ContentMember',
+        'method' => 'getMember',
+        'http-method' => 'GET'
+    ),
+    array( // Add member
+        'regex' => '#^/contents/(?P<parentId>\d+)/members$#',
+        'model' => 'CMS_Views_ContentMember',
+        'method' => 'addMember',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::editorRequired'
+        )
+    ),
+    array( // Add member
+        'regex' => '#^/contents/(?P<parentId>\d+)/members/(?P<modelId>\d+)$#',
+        'model' => 'CMS_Views_ContentMember',
+        'method' => 'addMember',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::editorRequired'
+        )
+    ),
+    array( // Delete member
+        'regex' => '#^/contents/(?P<parentId>\d+)/members/(?P<modelId>\d+)$#',
+        'model' => 'CMS_Views_ContentMember',
+        'method' => 'removeMember',
+        'http-method' => 'DELETE',
+        'precond' => array(
+            'CMS_Precondition::editorRequired'
+        )
+    ),
+    
+    //*************************************************************
+    
     array( // Read (by name)
-        'regex' => '#^/contents/(?P<name>.+)$#',
+        'regex' => '#^/contents/(?P<name>[^/]+)$#',
         'model' => 'CMS_Views',
         'method' => 'get',
         'http-method' => 'GET'

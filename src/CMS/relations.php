@@ -16,9 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+/*
+ * Signals
+ */
+Pluf_Signal::connect('CMS_Content::stateChanged', array(
+    'CMS_Content_Manager_Abstract',
+    'addHistory'
+));
+
 return array(
     'CMS_Content' => array(
         'relate_to' => array(
+            'User_Account'
+        ),
+        'relate_to_many' => array(
             'User_Account'
         )
     ),
@@ -30,14 +42,20 @@ return array(
     'CMS_TermTaxonomy' => array(
         'relate_to' => array(
             'CMS_Term'
-        ),        
+        ),
         'relate_to_many' => array(
             'CMS_Content'
-        )  
+        )
     ),
     'CMS_TermMeta' => array(
         'relate_to' => array(
             'CMS_Term'
         )
     ),
+    'CMS_ContentHistory' => array(
+        'relate_to' => array(
+            'CMS_Content',
+            'User_Account'
+        )
+    )
 );

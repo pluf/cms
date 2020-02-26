@@ -360,6 +360,222 @@ class Content_BasicsTest extends TestCase
         Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
         Test_Assert::assertResponseEmptyPaginateList($response, 'The list is empty');
     }
+    
+    /**
+     * Add member to a content
+     *
+     * @test
+     */
+    public function addingMemberToContent()
+    {
+        // login
+        $response = self::$client->post('/api/v2/user/login', array(
+            'login' => 'test',
+            'password' => 'test'
+        ));
+        $this->assertNotNull($response);
+        $this->assertEquals($response->status_code, 200);
+        $user = new User_Account();
+        $user = $user->getUser('test');
+        
+        // create
+        $form = array(
+            'name' => 'test-content' . rand(),
+            'title' => 'test contetn',
+            'description' => 'This is a simple content is used int test process',
+            'mime_type' => 'application/test'
+        );
+        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $this->assertNotNull($response);
+        $this->assertEquals($response->status_code, 200);
+        
+        // load content by name
+        Pluf::loadFunction('CMS_Shortcuts_GetNamedContentOr404');
+        $content = CMS_Shortcuts_GetNamedContentOr404($form['name']);
+        $this->assertNotNull($content);
+        $this->assertEquals($content->name, $form['name']);
+        
+        // Adding new member to the content
+        $data = array(
+            'id' => $user->id
+        );
+        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/members', $data);
+        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta data is not generated');
+        
+        // Getting list of members
+        $mList = $content->get_members_list();
+        Test_Assert::assertNotNull($mList, 'There is not meta data for the content');
+        Test_Assert::assertTrue($mList->count() > 0, 'There is not meta data for the content');
+    }
+    
+    /**
+     * Getting list of members
+     *
+     * @test
+     */
+    public function gettingMembersOfContent()
+    {
+        // login
+        $response = self::$client->post('/api/v2/user/login', array(
+            'login' => 'test',
+            'password' => 'test'
+        ));
+        $this->assertNotNull($response);
+        $this->assertEquals($response->status_code, 200);
+        
+        $user = new User_Account();
+        $user = $user->getUser('test');
+        
+        // create
+        $form = array(
+            'name' => 'test-content' . rand(),
+            'title' => 'test contetn',
+            'description' => 'This is a simple content is used int test process',
+            'mime_type' => 'application/test'
+        );
+        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $this->assertNotNull($response);
+        $this->assertEquals($response->status_code, 200);
+        
+        // load content by name
+        Pluf::loadFunction('CMS_Shortcuts_GetNamedContentOr404');
+        $content = CMS_Shortcuts_GetNamedContentOr404($form['name']);
+        $this->assertNotNull($content);
+        $this->assertEquals($content->name, $form['name']);
+        
+        // Adding new member to the content
+        $mForm = array(
+            'id' => $user->id
+        );
+        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/members', $mForm);
+        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta data is not generated');
+        
+        // Getting list of metas
+        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/members');
+        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is empty');
+    }
+    
+    /**
+     * Get a member
+     *
+     * @test
+     */
+    public function getMemberOfContent()
+    {
+        // login
+        $response = self::$client->post('/api/v2/user/login', array(
+            'login' => 'test',
+            'password' => 'test'
+        ));
+        $this->assertNotNull($response);
+        $this->assertEquals($response->status_code, 200);
+        
+        $user = new User_Account();
+        $user = $user->getUser('test');
+        
+        // create
+        $form = array(
+            'name' => 'test-content' . rand(),
+            'title' => 'test contetn',
+            'description' => 'This is a simple content is used int test process',
+            'mime_type' => 'application/test'
+        );
+        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $this->assertNotNull($response);
+        $this->assertEquals($response->status_code, 200);
+        
+        // load content by name
+        Pluf::loadFunction('CMS_Shortcuts_GetNamedContentOr404');
+        $content = CMS_Shortcuts_GetNamedContentOr404($form['name']);
+        $this->assertNotNull($content);
+        $this->assertEquals($content->name, $form['name']);
+        
+        // Adding new member to the content
+        $metaForm = array(
+            'id' => $user->id
+        );
+        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/members', $metaForm);
+        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta data is not generated');
+        
+        $mlist = $content->get_members_list();
+        $meta = $mlist[0];
+        
+        // Delete list of metas
+        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/members/' . $meta->id);
+        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta is not accessable');
+    }
+    
+    /**
+     *
+     * Delete a member
+     *
+     * @test
+     */
+    public function deleteMemberOfContent()
+    {
+        // login
+        $response = self::$client->post('/api/v2/user/login', array(
+            'login' => 'test',
+            'password' => 'test'
+        ));
+        $this->assertNotNull($response);
+        $this->assertEquals($response->status_code, 200);
+        
+        $user = new User_Account();
+        $user = $user->getUser('test');
+        
+        // create
+        $form = array(
+            'name' => 'test-content' . rand(),
+            'title' => 'test contetn',
+            'description' => 'This is a simple content is used int test process',
+            'mime_type' => 'application/test'
+        );
+        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $this->assertNotNull($response);
+        $this->assertEquals($response->status_code, 200);
+        
+        // load content by name
+        Pluf::loadFunction('CMS_Shortcuts_GetNamedContentOr404');
+        $content = CMS_Shortcuts_GetNamedContentOr404($form['name']);
+        $this->assertNotNull($content);
+        $this->assertEquals($content->name, $form['name']);
+        
+        // Adding new member to the content
+        $metaForm = array(
+            'id' => $user->id
+        );
+        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/members', $metaForm);
+        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta data is not generated');
+        
+        $mlist = $content->get_members_list();
+        $meta = $mlist[0];
+        
+        // Delete list of members
+        $response = self::$client->delete('/api/v2/cms/contents/' . $content->id . '/members/' . $meta->id);
+        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        
+        // Getting list of members
+        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/members');
+        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
+        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        Test_Assert::assertResponseEmptyPaginateList($response, 'The list is empty');
+    }
+    
+    
 }
 
 
