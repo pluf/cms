@@ -16,16 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\IncompleteTestError;
-require_once 'Pluf.php';
+namespace Pluf\Test\Content;
 
-/**
- *
- * @backupGlobals disabled
- * @backupStaticAttributes disabled
- */
-class Content_BasicsTest extends TestCase
+use Pluf\Test\Client;
+use Pluf\Test\TestCase;
+use CMS_Content;
+use Exception;
+use Pluf;
+use Pluf_Migration;
+use User_Account;
+use User_Credential;
+use User_Role;
+
+class BasicsTest extends TestCase
 {
 
     private static $client = null;
@@ -37,7 +40,7 @@ class Content_BasicsTest extends TestCase
     public static function createDataBase()
     {
         Pluf::start(__DIR__ . '/../conf/config.php');
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->install();
 
         // Test user
@@ -60,20 +63,7 @@ class Content_BasicsTest extends TestCase
         $per = User_Role::getFromString('tenant.owner');
         $user->setAssoc($per);
 
-        self::$client = new Test_Client(array(
-            array(
-                'app' => 'Cms',
-                'regex' => '#^/api/v2/cms#',
-                'base' => '',
-                'sub' => include 'CMS/urls-v2.php'
-            ),
-            array(
-                'app' => 'User',
-                'regex' => '#^/api/v2/user#',
-                'base' => '',
-                'sub' => include 'User/urls-v2.php'
-            )
-        ));
+        self::$client = new Client();
     }
 
     /**
@@ -82,7 +72,7 @@ class Content_BasicsTest extends TestCase
      */
     public static function removeDatabses()
     {
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->unInstall();
     }
 
@@ -92,15 +82,8 @@ class Content_BasicsTest extends TestCase
      */
     public function listContentsRestTest()
     {
-        $client = new Test_Client(array(
-            array(
-                'app' => 'Cms',
-                'regex' => '#^/api/v2/cms#',
-                'base' => '',
-                'sub' => include 'CMS/urls-v2.php'
-            )
-        ));
-        $response = $client->get('/api/v2/cms/contents');
+        $client = new Client();
+        $response = $client->get('/cms/contents');
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
     }
@@ -113,7 +96,7 @@ class Content_BasicsTest extends TestCase
     public function crudRestTest()
     {
         // login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -127,7 +110,7 @@ class Content_BasicsTest extends TestCase
             'description' => 'This is a simple content is used int test process',
             'mime_type' => 'application/test'
         );
-        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $response = self::$client->post('/cms/contents', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
 
@@ -137,19 +120,19 @@ class Content_BasicsTest extends TestCase
         $content->create();
 
         // Get by id
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id);
+        $response = self::$client->get('/cms/contents/' . $content->id);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
 
         // Update by id
-        $response = self::$client->post('/api/v2/cms/contents/' . $content->id, array(
+        $response = self::$client->post('/cms/contents/' . $content->id, array(
             'title' => 'new title'
         ));
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
 
         // delete by id
-        $response = self::$client->delete('/api/v2/cms/contents/' . $content->id);
+        $response = self::$client->delete('/cms/contents/' . $content->id);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
     }
@@ -162,7 +145,7 @@ class Content_BasicsTest extends TestCase
     public function addingMetaToContent()
     {
         // login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -176,7 +159,7 @@ class Content_BasicsTest extends TestCase
             'description' => 'This is a simple content is used int test process',
             'mime_type' => 'application/test'
         );
-        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $response = self::$client->post('/cms/contents', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
 
@@ -191,15 +174,15 @@ class Content_BasicsTest extends TestCase
             'key' => 'meta key' . rand(),
             'value' => 'THis is a SEIMple texte long'
         );
-        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/metas', $metaForm);
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta data is not generated');
+        $response = self::$client->post('/cms/contents/' . $content->id . '/metas', $metaForm);
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNotAnonymousModel($response, 'Meta data is not generated');
 
         // Getting list of metas
         $metaList = $content->get_metas_list();
-        Test_Assert::assertNotNull($metaList, 'There is not meta data for the content');
-        Test_Assert::assertTrue($metaList->count() > 0, 'There is not meta data for the content');
+        $this->assertNotNull($metaList, 'There is not meta data for the content');
+        $this->assertTrue($metaList->count() > 0, 'There is not meta data for the content');
     }
 
     /**
@@ -210,7 +193,7 @@ class Content_BasicsTest extends TestCase
     public function gettingMetasOfContent()
     {
         // login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -224,7 +207,7 @@ class Content_BasicsTest extends TestCase
             'description' => 'This is a simple content is used int test process',
             'mime_type' => 'application/test'
         );
-        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $response = self::$client->post('/cms/contents', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
 
@@ -239,16 +222,16 @@ class Content_BasicsTest extends TestCase
             'key' => 'meta key' . rand(),
             'value' => 'THis is a SEIMple texte long'
         );
-        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/metas', $metaForm);
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta data is not generated');
+        $response = self::$client->post('/cms/contents/' . $content->id . '/metas', $metaForm);
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNotAnonymousModel($response, 'Meta data is not generated');
 
         // Getting list of metas
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/metas');
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is empty');
+        $response = self::$client->get('/cms/contents/' . $content->id . '/metas');
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNonEmptyPaginateList($response, 'The list is empty');
     }
 
     /**
@@ -259,7 +242,7 @@ class Content_BasicsTest extends TestCase
     public function getMetaOfContent()
     {
         // login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -273,7 +256,7 @@ class Content_BasicsTest extends TestCase
             'description' => 'This is a simple content is used int test process',
             'mime_type' => 'application/test'
         );
-        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $response = self::$client->post('/cms/contents', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
 
@@ -288,19 +271,19 @@ class Content_BasicsTest extends TestCase
             'key' => 'meta key' . rand(),
             'value' => 'THis is a SEIMple texte long'
         );
-        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/metas', $metaForm);
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta data is not generated');
+        $response = self::$client->post('/cms/contents/' . $content->id . '/metas', $metaForm);
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNotAnonymousModel($response, 'Meta data is not generated');
 
         $mlist = $content->get_metas_list();
         $meta = $mlist[0];
 
         // Delete list of metas
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/metas/' . $meta->id);
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta is not accessable');
+        $response = self::$client->get('/cms/contents/' . $content->id . '/metas/' . $meta->id);
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNotAnonymousModel($response, 'Meta is not accessable');
     }
 
     /**
@@ -312,7 +295,7 @@ class Content_BasicsTest extends TestCase
     public function deleteMetaOfContent()
     {
         // login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -326,7 +309,7 @@ class Content_BasicsTest extends TestCase
             'description' => 'This is a simple content is used int test process',
             'mime_type' => 'application/test'
         );
-        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $response = self::$client->post('/cms/contents', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
 
@@ -341,24 +324,24 @@ class Content_BasicsTest extends TestCase
             'key' => 'meta key' . rand(),
             'value' => 'THis is a SEIMple texte long'
         );
-        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/metas', $metaForm);
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta data is not generated');
+        $response = self::$client->post('/cms/contents/' . $content->id . '/metas', $metaForm);
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNotAnonymousModel($response, 'Meta data is not generated');
 
         $mlist = $content->get_metas_list();
         $meta = $mlist[0];
 
         // Delete list of metas
-        $response = self::$client->delete('/api/v2/cms/contents/' . $content->id . '/metas/' . $meta->id);
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $response = self::$client->delete('/cms/contents/' . $content->id . '/metas/' . $meta->id);
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
 
         // Getting list of metas
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/metas');
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseEmptyPaginateList($response, 'The list is empty');
+        $response = self::$client->get('/cms/contents/' . $content->id . '/metas');
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseEmptyPaginateList($response, 'The list is empty');
     }
     
     /**
@@ -369,7 +352,7 @@ class Content_BasicsTest extends TestCase
     public function addingMemberToContent()
     {
         // login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -385,7 +368,7 @@ class Content_BasicsTest extends TestCase
             'description' => 'This is a simple content is used int test process',
             'mime_type' => 'application/test'
         );
-        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $response = self::$client->post('/cms/contents', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
         
@@ -399,15 +382,15 @@ class Content_BasicsTest extends TestCase
         $data = array(
             'id' => $user->id
         );
-        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/members', $data);
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta data is not generated');
+        $response = self::$client->post('/cms/contents/' . $content->id . '/members', $data);
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNotAnonymousModel($response, 'Meta data is not generated');
         
         // Getting list of members
         $mList = $content->get_members_list();
-        Test_Assert::assertNotNull($mList, 'There is not meta data for the content');
-        Test_Assert::assertTrue($mList->count() > 0, 'There is not meta data for the content');
+        $this->assertNotNull($mList, 'There is not meta data for the content');
+        $this->assertTrue($mList->count() > 0, 'There is not meta data for the content');
     }
     
     /**
@@ -418,7 +401,7 @@ class Content_BasicsTest extends TestCase
     public function gettingMembersOfContent()
     {
         // login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -435,7 +418,7 @@ class Content_BasicsTest extends TestCase
             'description' => 'This is a simple content is used int test process',
             'mime_type' => 'application/test'
         );
-        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $response = self::$client->post('/cms/contents', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
         
@@ -449,16 +432,16 @@ class Content_BasicsTest extends TestCase
         $mForm = array(
             'id' => $user->id
         );
-        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/members', $mForm);
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta data is not generated');
+        $response = self::$client->post('/cms/contents/' . $content->id . '/members', $mForm);
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNotAnonymousModel($response, 'Meta data is not generated');
         
         // Getting list of metas
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/members');
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is empty');
+        $response = self::$client->get('/cms/contents/' . $content->id . '/members');
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNonEmptyPaginateList($response, 'The list is empty');
     }
     
     /**
@@ -469,7 +452,7 @@ class Content_BasicsTest extends TestCase
     public function getMemberOfContent()
     {
         // login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -486,7 +469,7 @@ class Content_BasicsTest extends TestCase
             'description' => 'This is a simple content is used int test process',
             'mime_type' => 'application/test'
         );
-        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $response = self::$client->post('/cms/contents', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
         
@@ -500,19 +483,19 @@ class Content_BasicsTest extends TestCase
         $metaForm = array(
             'id' => $user->id
         );
-        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/members', $metaForm);
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta data is not generated');
+        $response = self::$client->post('/cms/contents/' . $content->id . '/members', $metaForm);
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNotAnonymousModel($response, 'Meta data is not generated');
         
         $mlist = $content->get_members_list();
         $meta = $mlist[0];
         
         // Delete list of metas
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/members/' . $meta->id);
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta is not accessable');
+        $response = self::$client->get('/cms/contents/' . $content->id . '/members/' . $meta->id);
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNotAnonymousModel($response, 'Meta is not accessable');
     }
     
     /**
@@ -524,7 +507,7 @@ class Content_BasicsTest extends TestCase
     public function deleteMemberOfContent()
     {
         // login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -541,7 +524,7 @@ class Content_BasicsTest extends TestCase
             'description' => 'This is a simple content is used int test process',
             'mime_type' => 'application/test'
         );
-        $response = self::$client->post('/api/v2/cms/contents', $form);
+        $response = self::$client->post('/cms/contents', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
         
@@ -555,24 +538,24 @@ class Content_BasicsTest extends TestCase
         $metaForm = array(
             'id' => $user->id
         );
-        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/members', $metaForm);
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNotAnonymousModel($response, 'Meta data is not generated');
+        $response = self::$client->post('/cms/contents/' . $content->id . '/members', $metaForm);
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNotAnonymousModel($response, 'Meta data is not generated');
         
         $mlist = $content->get_members_list();
         $meta = $mlist[0];
         
         // Delete list of members
-        $response = self::$client->delete('/api/v2/cms/contents/' . $content->id . '/members/' . $meta->id);
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $response = self::$client->delete('/cms/contents/' . $content->id . '/members/' . $meta->id);
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
         
         // Getting list of members
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/members');
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseEmptyPaginateList($response, 'The list is empty');
+        $response = self::$client->get('/cms/contents/' . $content->id . '/members');
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseEmptyPaginateList($response, 'The list is empty');
     }
     
     

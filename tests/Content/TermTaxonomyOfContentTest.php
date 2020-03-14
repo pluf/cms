@@ -16,16 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\IncompleteTestError;
-require_once 'Pluf.php';
+namespace Pluf\Test\Content;
 
-/**
- *
- * @backupGlobals disabled
- * @backupStaticAttributes disabled
- */
-class Content_TermTaxonomyOfContentTest extends TestCase
+use Pluf\Test\Client;
+use Pluf\Test\TestCase;
+use CMS_Content;
+use CMS_TermTaxonomy;
+use Exception;
+use Pluf;
+use Pluf_Migration;
+use User_Account;
+use User_Credential;
+use User_Role;
+
+class TermTaxonomyOfContentTest extends TestCase
 {
 
     private static $client = null;
@@ -37,7 +41,7 @@ class Content_TermTaxonomyOfContentTest extends TestCase
     public static function createDataBase()
     {
         Pluf::start(__DIR__ . '/../conf/config.php');
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->install();
 
         // Test user
@@ -60,20 +64,7 @@ class Content_TermTaxonomyOfContentTest extends TestCase
         $per = User_Role::getFromString('tenant.owner');
         $user->setAssoc($per);
 
-        self::$client = new Test_Client(array(
-            array(
-                'app' => 'Cms',
-                'regex' => '#^/api/v2/cms#',
-                'base' => '',
-                'sub' => include 'CMS/urls-v2.php'
-            ),
-            array(
-                'app' => 'User',
-                'regex' => '#^/api/v2/user#',
-                'base' => '',
-                'sub' => include 'User/urls-v2.php'
-            )
-        ));
+        self::$client = new Client();
     }
 
     /**
@@ -82,7 +73,7 @@ class Content_TermTaxonomyOfContentTest extends TestCase
      */
     public static function removeDatabses()
     {
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->unInstall();
     }
 
@@ -94,7 +85,7 @@ class Content_TermTaxonomyOfContentTest extends TestCase
     public function addingTermTaxonomyToContent()
     {
         // login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -118,14 +109,14 @@ class Content_TermTaxonomyOfContentTest extends TestCase
         $form = array(
             'id' => $tt->id
         );
-        $response = self::$client->post('/api/v2/cms/contents/' . $content->id . '/term-taxonomies', $form);
-        Test_Assert::assertResponseNotNull($response, 'Result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Status code is not 200');
+        $response = self::$client->post('/cms/contents/' . $content->id . '/term-taxonomies', $form);
+        $this->assertResponseNotNull($response, 'Result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Status code is not 200');
 
         // Getting list of term-taxonomies of content
         $ttList = $content->get_term_taxonomies_list();
-        Test_Assert::assertNotNull($ttList, 'There is no term-taxonomy for the content');
-        Test_Assert::assertTrue($ttList->count() > 0, 'There is no term-taxonomy related to the content');
+        $this->assertNotNull($ttList, 'There is no term-taxonomy for the content');
+        $this->assertTrue($ttList->count() > 0, 'There is no term-taxonomy related to the content');
     }
 
     /**
@@ -136,7 +127,7 @@ class Content_TermTaxonomyOfContentTest extends TestCase
     public function gettingTermTaxonomiesOfContent()
     {
         // login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -159,10 +150,10 @@ class Content_TermTaxonomyOfContentTest extends TestCase
         $tt->setAssoc($content);
 
         // Getting list of term-taxonomies
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/term-taxonomies');
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is empty');
+        $response = self::$client->get('/cms/contents/' . $content->id . '/term-taxonomies');
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNonEmptyPaginateList($response, 'The list is empty');
     }
 
     /**
@@ -174,7 +165,7 @@ class Content_TermTaxonomyOfContentTest extends TestCase
     public function deleteMetaOfContent()
     {
         // login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -197,21 +188,21 @@ class Content_TermTaxonomyOfContentTest extends TestCase
         $tt->setAssoc($content);
 
         // Getting list of term-taxonomies
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/term-taxonomies');
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is empty');
+        $response = self::$client->get('/cms/contents/' . $content->id . '/term-taxonomies');
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNonEmptyPaginateList($response, 'The list is empty');
 
         // Delete term-taxonomoy from the content
-        $response = self::$client->delete('/api/v2/cms/contents/' . $content->id . '/term-taxonomies/' . $tt->id);
-        Test_Assert::assertResponseNotNull($response, 'Result of delete request is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Delete status code is not 200');
+        $response = self::$client->delete('/cms/contents/' . $content->id . '/term-taxonomies/' . $tt->id);
+        $this->assertResponseNotNull($response, 'Result of delete request is empty');
+        $this->assertResponseStatusCode($response, 200, 'Delete status code is not 200');
 
         // Getting list of metas
-        $response = self::$client->get('/api/v2/cms/contents/' . $content->id . '/term-taxonomies');
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseEmptyPaginateList($response, 'The list is not empty');
+        $response = self::$client->get('/cms/contents/' . $content->id . '/term-taxonomies');
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseEmptyPaginateList($response, 'The list is not empty');
     }
 }
 

@@ -19,7 +19,7 @@ abstract class CMS_Content_Manager_Abstract implements CMS_Content_Manager
      */
     public function apply($content, $action, $save = false)
     {
-        $machine = new Workflow_Machine();
+        $machine = new Pluf\Workflow\Machine();
         $machine->setStates($this->getStates())
             ->setSignals(array('CMS_Content::stateChanged'))
             ->setProperty('state')

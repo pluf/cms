@@ -16,15 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\IncompleteTestError;
-require_once 'Pluf.php';
+namespace Pluf\Test\Monitor;
 
-/**
- * @backupGlobals disabled
- * @backupStaticAttributes disabled
- */
-class Monitor_BasicsTest extends TestCase
+use Pluf\Test\Client;
+use Pluf\Test\TestCase;
+use Exception;
+use Pluf;
+use Pluf_Migration;
+use User_Account;
+use User_Credential;
+use User_Role;
+
+class BasicsTest extends TestCase
 {
     
     private static $client = null;
@@ -35,7 +38,7 @@ class Monitor_BasicsTest extends TestCase
     public static function createDataBase()
     {
         Pluf::start(__DIR__.'/../conf/config.php');
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->install();
         
         // Test user
@@ -58,20 +61,7 @@ class Monitor_BasicsTest extends TestCase
         $per = User_Role::getFromString('tenant.owner');
         $user->setAssoc($per);
         
-        self::$client = new Test_Client(array(
-            array(
-                'app' => 'User',
-                'regex' => '#^/api/v2/user#',
-                'base' => '',
-                'sub' => include 'User/urls-v2.php'
-            ),
-            array(
-                'regex' => '#^/monitor/count$#',
-                'model' => 'CMS_Monitor',
-                'method' => 'count',
-                'http-method' => 'GET'
-            )
-        ));
+        self::$client = new Client();
     }
     
     /**
@@ -79,7 +69,7 @@ class Monitor_BasicsTest extends TestCase
      */
     public static function removeDatabses()
     {
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->unInstall();
     }
     
@@ -94,7 +84,7 @@ class Monitor_BasicsTest extends TestCase
         $user = $user->getUser('test');
         
         // Login
-        $response = self::$client->post('/api/v2/user/login', array(
+        $response = self::$client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));

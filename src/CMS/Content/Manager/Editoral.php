@@ -17,7 +17,7 @@ class CMS_Content_Manager_Editoral extends CMS_Content_Manager_Abstract
      * State machine of the manager
      */
     private static $STATE_MACHINE = array(
-        Workflow_Machine::STATE_UNDEFINED => array(
+        Pluf\Workflow\Machine::STATE_UNDEFINED => array(
             'next' => 'planning'
         ),
         // States
