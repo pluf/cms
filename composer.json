@@ -1,5 +1,6 @@
 {
 	"name" : "pluf/cms",
+	"version" : "6.0.5",
 	"description" : "Content management system fo pluf",
 	"type" : "library",
 	"license" : "MIT",
@@ -17,19 +18,32 @@
 	],
 	"minimum-stability" : "stable",
 	"require" : {
-		"pluf/core" : "5.13.x",
-		"pluf/user" : "5.13.x",
-		"pluf/monitor" : "5.13.x",
-		"pluf/workflow" : "5.13.x"
+		"pluf/core" : "6.x",
+		"pluf/user" : "6.x",
+		"pluf/monitor" : "6.x",
+		"pluf/workflow" : "6.x"
 	},
 	"require-dev" : {
-		"pluf/test" : "5.13.x",
+		"pluf/test" : "6.x",
 		"phayes/geophp" : "^1.2"
 	},
 	"include-path" : [
 		"src/"
 	],
-	"homepage" : "https://github.com/pluf/cache",
+	"autoload" : {
+		"psr-0" : {
+			"" : "src"
+		},
+		"psr-4" : {
+			"Pluf\\CMS\\" : "src6/"
+		}
+	},
+	"autoload-dev" : {
+		"psr-4" : {
+			"Pluf\\Test\\" : "tests"
+		}
+	},
+	"homepage" : "https://github.com/pluf/cms",
 	"support" : {
 		"email" : "info@pluf.ir",
 		"issues" : "https://github.com/pluf/cms/issues",
@@ -42,5 +56,42 @@
 		"php",
 		"cache",
 		"pluf-module"
+	],
+	"repositories" : [{
+			"type" : "path",
+			"url" : "../core",
+			"name" : "pluf/core",
+			"options" : {
+				"symlink" : true
+			}
+		}, {
+			"type" : "path",
+			"url" : "../test",
+			"name" : "pluf/test",
+			"options" : {
+				"symlink" : true
+			}
+		}, {
+			"type" : "path",
+			"url" : "../user",
+			"name" : "pluf/user",
+			"options" : {
+				"symlink" : true
+			}
+		}, {
+			"type" : "path",
+			"url" : "../monitor",
+			"name" : "pluf/monitor",
+			"options" : {
+				"symlink" : true
+			}
+		}, {
+			"type" : "path",
+			"url" : "../workflow",
+			"name" : "pluf/workflow",
+			"options" : {
+				"symlink" : true
+			}
+		}
 	]
 }

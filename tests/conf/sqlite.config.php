@@ -25,7 +25,7 @@ $cfg = array();
 $cfg['db_login'] = 'root';
 $cfg['db_password'] = '';
 $cfg['db_server'] = 'localhost';
-$cfg['db_database'] = dirname(__FILE__) . '/../tmp/test.sqlite.db';
+$cfg['db_database'] = '/tmp/test.sqlite.db';
 
 // Must be shared by all the installed_apps and the core framework.
 // That way you can have several installations of the core framework.

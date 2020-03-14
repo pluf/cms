@@ -16,16 +16,13 @@
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\IncompleteTestError;
+namespace Pluf\Test\Cms;
 
-require_once 'Pluf.php';
+use Pluf\Test\TestCase;
+use Pluf;
 
-/**
- * @backupGlobals disabled
- * @backupStaticAttributes disabled
- */
-class Cms_CoreTest extends TestCase
+
+class CoreTest extends TestCase
 {
 
     /**
