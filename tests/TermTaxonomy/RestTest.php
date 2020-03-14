@@ -16,16 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\IncompleteTestError;
-require_once 'Pluf.php';
+namespace Pluf\Test\TermTaxonomy;
 
-/**
- *
- * @backupGlobals disabled
- * @backupStaticAttributes disabled
- */
-class Cms_TermTaxonomy_RestTest extends TestCase
+use Pluf\Test\Client;
+use Pluf\Test\TestCase;
+use CMS_Content;
+use CMS_Term;
+use CMS_TermTaxonomy;
+use Exception;
+use Pluf;
+use Pluf_Migration;
+use User_Account;
+use User_Credential;
+use User_Role;
+
+class RestTest extends TestCase
 {
 
     var $client = null;
@@ -37,7 +42,7 @@ class Cms_TermTaxonomy_RestTest extends TestCase
     public static function createDataBase()
     {
         Pluf::start(__DIR__ . '/../conf/config.php');
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->install();
 
         // Test user
@@ -67,7 +72,7 @@ class Cms_TermTaxonomy_RestTest extends TestCase
      */
     public static function removeDatabses()
     {
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->unInstall();
     }
 
@@ -77,20 +82,7 @@ class Cms_TermTaxonomy_RestTest extends TestCase
      */
     public function init()
     {
-        $this->client = new Test_Client(array(
-            array(
-                'app' => 'Cms',
-                'regex' => '#^/api/v2/cms#',
-                'base' => '',
-                'sub' => include 'CMS/urls-v2.php'
-            ),
-            array(
-                'app' => 'User',
-                'regex' => '#^/api/v2/user#',
-                'base' => '',
-                'sub' => include 'User/urls-v2.php'
-            )
-        ));
+        $this->client = new Client();
     }
 
     /**
@@ -100,7 +92,7 @@ class Cms_TermTaxonomy_RestTest extends TestCase
     public function createRestTest()
     {
         // login
-        $response = $this->client->post('/api/v2/user/login', array(
+        $response = $this->client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -115,7 +107,7 @@ class Cms_TermTaxonomy_RestTest extends TestCase
             'description' => 'description',
             'term_id' => $term->id
         );
-        $response = $this->client->post('/api/v2/cms/term-taxonomies', $form);
+        $response = $this->client->post('/cms/term-taxonomies', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
     }
@@ -130,7 +122,7 @@ class Cms_TermTaxonomy_RestTest extends TestCase
         $term->name = 'term-' . rand();
         $term->slug = 'slug-' . rand();
         $term->create();
-        Test_Assert::assertFalse($term->isAnonymous(), 'Could not create CMS_Term');
+        $this->assertFalse($term->isAnonymous(), 'Could not create CMS_Term');
 
         $item = new CMS_TermTaxonomy();
         $item->taxonomy = 'taxonomy-' . rand();
@@ -138,9 +130,9 @@ class Cms_TermTaxonomy_RestTest extends TestCase
         $item->term_id = $term;
         $item->create();
 
-        Test_Assert::assertFalse($item->isAnonymous(), 'Could not create CMS_TermTaxonomy');
+        $this->assertFalse($item->isAnonymous(), 'Could not create CMS_TermTaxonomy');
         // Get item
-        $response = $this->client->get('/api/v2/cms/term-taxonomies/' . $item->id);
+        $response = $this->client->get('/cms/term-taxonomies/' . $item->id);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
     }
@@ -152,7 +144,7 @@ class Cms_TermTaxonomy_RestTest extends TestCase
     public function updateRestTest()
     {
         // login
-        $response = $this->client->post('/api/v2/user/login', array(
+        $response = $this->client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -161,20 +153,20 @@ class Cms_TermTaxonomy_RestTest extends TestCase
         $term->name = 'term-' . rand();
         $term->slug = 'slug-' . rand();
         $term->create();
-        Test_Assert::assertFalse($term->isAnonymous(), 'Could not create CMS_Term');
+        $this->assertFalse($term->isAnonymous(), 'Could not create CMS_Term');
 
         $item = new CMS_TermTaxonomy();
         $item->taxonomy = 'taxonomy-' . rand();
         $item->description = 'It is a test term-taxonomy';
         $item->term_id = $term;
         $item->create();
-        Test_Assert::assertFalse($item->isAnonymous(), 'Could not create CMS_TermTaxonomy');
+        $this->assertFalse($item->isAnonymous(), 'Could not create CMS_TermTaxonomy');
         // Update item
         $form = array(
             'taxonomy' => 'new-taxonomy' . rand(),
             'description' => 'updated description'
         );
-        $response = $this->client->post('/api/v2/cms/term-taxonomies/' . $item->id, $form);
+        $response = $this->client->post('/cms/term-taxonomies/' . $item->id, $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
     }
@@ -186,7 +178,7 @@ class Cms_TermTaxonomy_RestTest extends TestCase
     public function deleteRestTest()
     {
         // login
-        $response = $this->client->post('/api/v2/user/login', array(
+        $response = $this->client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -194,17 +186,17 @@ class Cms_TermTaxonomy_RestTest extends TestCase
         $term->name = 'term-' . rand();
         $term->slug = 'slug-' . rand();
         $term->create();
-        Test_Assert::assertFalse($term->isAnonymous(), 'Could not create CMS_Term');
+        $this->assertFalse($term->isAnonymous(), 'Could not create CMS_Term');
         
         $item = new CMS_TermTaxonomy();
         $item->taxonomy = 'taxonomy-' . rand();
         $item->description = 'It is a test term-taxonomy';
         $item->term_id = $term;
         $item->create();
-        Test_Assert::assertFalse($item->isAnonymous(), 'Could not create CMS_TermTaxonomy');
+        $this->assertFalse($item->isAnonymous(), 'Could not create CMS_TermTaxonomy');
 
         // delete
-        $response = $this->client->delete('/api/v2/cms/term-taxonomies/' . $item->id);
+        $response = $this->client->delete('/cms/term-taxonomies/' . $item->id);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
     }
@@ -215,7 +207,7 @@ class Cms_TermTaxonomy_RestTest extends TestCase
      */
     public function findRestTest()
     {
-        $response = $this->client->get('/api/v2/cms/term-taxonomies');
+        $response = $this->client->get('/cms/term-taxonomies');
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
     }
@@ -231,19 +223,19 @@ class Cms_TermTaxonomy_RestTest extends TestCase
         $term->name = 'term-' . rand();
         $term->slug = 'slug-' . rand();
         $term->create();
-        Test_Assert::assertFalse($term->isAnonymous(), 'Could not create CMS_Term');
+        $this->assertFalse($term->isAnonymous(), 'Could not create CMS_Term');
         
         $item = new CMS_TermTaxonomy();
         $item->taxonomy = 'taxonomy-' . rand();
         $item->description = 'It is a test term-taxonomy';
         $item->term_id = $term;
         $item->create();
-        Test_Assert::assertFalse($item->isAnonymous(), 'Could not create CMS_TermTaxonomy');
+        $this->assertFalse($item->isAnonymous(), 'Could not create CMS_TermTaxonomy');
         // Get children (empty list)
-        $response = $this->client->get('/api/v2/cms/term-taxonomies/' . $item->id . '/children');
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseEmptyPaginateList($response, 'The list is not empty');
+        $response = $this->client->get('/cms/term-taxonomies/' . $item->id . '/children');
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseEmptyPaginateList($response, 'The list is not empty');
         
         $item2 = new CMS_TermTaxonomy();
         $item2->taxonomy = 'taxonomy-' . rand();
@@ -251,12 +243,12 @@ class Cms_TermTaxonomy_RestTest extends TestCase
         $item2->term_id = $term;
         $item2->parent_id = $item;
         $item2->create();
-        Test_Assert::assertFalse($item2->isAnonymous(), 'Could not create CMS_TermTaxonomy');
+        $this->assertFalse($item2->isAnonymous(), 'Could not create CMS_TermTaxonomy');
         // Get item
-        $response = $this->client->get('/api/v2/cms/term-taxonomies/' . $item->id . '/children');
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is not empty');
+        $response = $this->client->get('/cms/term-taxonomies/' . $item->id . '/children');
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNonEmptyPaginateList($response, 'The list is not empty');
     }
 
     /**
@@ -269,7 +261,7 @@ class Cms_TermTaxonomy_RestTest extends TestCase
     {
 
         // login
-        $response = $this->client->post('/api/v2/user/login', array(
+        $response = $this->client->post('/user/login', array(
             'login' => 'test',
             'password' => 'test'
         ));
@@ -291,7 +283,7 @@ class Cms_TermTaxonomy_RestTest extends TestCase
         
         // Get user
         $user = User_Account::getUser('test');
-        Test_Assert::assertFalse($user->isAnonymous(), 'User could not be found');
+        $this->assertFalse($user->isAnonymous(), 'User could not be found');
         
         // Create content
         $content = new CMS_Content();
@@ -299,36 +291,36 @@ class Cms_TermTaxonomy_RestTest extends TestCase
         $content->title = 'Title ' . rand();
         $content->description = 'It is my content description';
         $content->author_id = $user;
-        Test_Assert::assertTrue($content->create(), 'Impossible to create cms content');
+        $this->assertTrue($content->create(), 'Impossible to create cms content');
         
         // Adding content
         $form = array(
             'id' => $content->id
         );
-        $response = $this->client->post('/api/v2/cms/term-taxonomies/' . $tt->id . '/contents', $form);
+        $response = $this->client->post('/cms/term-taxonomies/' . $tt->id . '/contents', $form);
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
-        Test_Assert::assertResponseAsModel($response);
+        $this->assertResponseAsModel($response);
         $actual = json_decode($response->content, true);
         $this->assertEquals($actual['id'], $content->id);
         $this->assertEquals($actual['name'], $content->name);
 
         // Getting list of contents
-        $response = $this->client->get('/api/v2/cms/term-taxonomies/' . $tt->id . '/contents');
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseNonEmptyPaginateList($response, 'The list is empty');
+        $response = $this->client->get('/cms/term-taxonomies/' . $tt->id . '/contents');
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseNonEmptyPaginateList($response, 'The list is empty');
 
         // Deleting content from the term-taxonomy
-        $response = $this->client->delete('/api/v2/cms/term-taxonomies/' . $tt->id . '/contents/' . $content->id);
-        Test_Assert::assertResponseNotNull($response, 'Result of delete request is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Delete status code is not 200');
+        $response = $this->client->delete('/cms/term-taxonomies/' . $tt->id . '/contents/' . $content->id);
+        $this->assertResponseNotNull($response, 'Result of delete request is empty');
+        $this->assertResponseStatusCode($response, 200, 'Delete status code is not 200');
 
         // Getting list of contents
-        $response = $this->client->get('/api/v2/cms/term-taxonomies/' . $tt->id . '/contents');
-        Test_Assert::assertResponseNotNull($response, 'Find result is empty');
-        Test_Assert::assertResponseStatusCode($response, 200, 'Find status code is not 200');
-        Test_Assert::assertResponseEmptyPaginateList($response, 'The list is not empty');
+        $response = $this->client->get('/cms/term-taxonomies/' . $tt->id . '/contents');
+        $this->assertResponseNotNull($response, 'Find result is empty');
+        $this->assertResponseStatusCode($response, 200, 'Find status code is not 200');
+        $this->assertResponseEmptyPaginateList($response, 'The list is not empty');
     }
 }
 

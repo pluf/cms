@@ -92,7 +92,7 @@ class BasicsTest extends TestCase
         $this->assertEquals($response->status_code, 200);
         
         // count
-        $response = self::$client->get('/monitor/count');
+        $response = self::$client->get('/monitor/metrics/cms.count');
         $this->assertNotNull($response);
         $this->assertEquals($response->status_code, 200);
     }
