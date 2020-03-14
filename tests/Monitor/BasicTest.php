@@ -40,6 +40,7 @@ class BasicsTest extends TestCase
         Pluf::start(__DIR__.'/../conf/config.php');
         $m = new Pluf_Migration();
         $m->install();
+        $m->init();
         
         // Test user
         $user = new User_Account();
