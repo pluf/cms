@@ -16,16 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\IncompleteTestError;
-require_once 'Pluf.php';
+namespace Pluf\Test\Content;
 
-/**
- *
- * @backupGlobals disabled
- * @backupStaticAttributes disabled
- */
-class Content_EditorRestTest extends TestCase
+use Pluf\Test\Client;
+use Pluf\Test\TestCase;
+use CMS_Content;
+use Exception;
+use Pluf;
+use Pluf_Migration;
+use Pluf_HTTP_Error404;
+use User_Account;
+use User_Credential;
+use User_Role;
+
+class EditorRestTest extends TestCase
 {
 
     var $client;
@@ -40,7 +44,7 @@ class Content_EditorRestTest extends TestCase
     public static function createDataBase()
     {
         Pluf::start(__DIR__ . '/../conf/config.php');
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->install();
         $m->init();
 
@@ -89,7 +93,7 @@ class Content_EditorRestTest extends TestCase
      */
     public static function removeDatabses()
     {
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->unInstall();
     }
 
@@ -99,20 +103,7 @@ class Content_EditorRestTest extends TestCase
      */
     public function init()
     {
-        $this->client = new Test_Client(array(
-            array(
-                'app' => 'Cms',
-                'regex' => '#^/cms#',
-                'base' => '',
-                'sub' => include 'CMS/urls-v2.php'
-            ),
-            array(
-                'app' => 'User',
-                'regex' => '#^/user#',
-                'base' => '',
-                'sub' => include 'User/urls-v2.php'
-            )
-        ));
+        $this->client = new Client();
         // login
         $response = $this->client->post('/user/login', array(
             'login' => 'editor',
@@ -160,7 +151,7 @@ class Content_EditorRestTest extends TestCase
         $content->title = 'Title ' . rand();
         $content->description = 'It is my content description';
         $content->author_id = $this->author;
-        Test_Assert::assertTrue($content->create(), 'Impossible to create cms content');
+        $this->assertTrue($content->create(), 'Impossible to create cms content');
         // Editor could change content created by any author
         $form = array(
             'name' => 'updated name',
@@ -188,7 +179,7 @@ class Content_EditorRestTest extends TestCase
         $content->title = 'Title ' . rand();
         $content->description = 'It is my content description';
         $content->author_id = $this->author;
-        Test_Assert::assertTrue($content->create(), 'Impossible to create cms content');
+        $this->assertTrue($content->create(), 'Impossible to create cms content');
         // Author could delete content created by any author
         $response = $this->client->delete('/cms/contents/' . $content->id);
         $this->assertEquals($response->status_code, 200);

@@ -16,16 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\IncompleteTestError;
+namespace Pluf\Test\Term;
 
-require_once 'Pluf.php';
+use Pluf\Test\TestCase;
+use CMS_Term;
+use Exception;
+use Pluf;
+use Pluf_Migration;
+use Pluf_Exception;
+use User_Account;
+use User_Credential;
+use User_Role;
 
-/**
- * @backupGlobals disabled
- * @backupStaticAttributes disabled
- */
-class Term_ModelTest extends TestCase
+class ModelTest extends TestCase
 {
     /**
      * @beforeClass
@@ -33,7 +36,7 @@ class Term_ModelTest extends TestCase
     public static function createDataBase()
     {
         Pluf::start(__DIR__ . '/../conf/config.php');
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->install();
         $m->init();
         
@@ -63,7 +66,7 @@ class Term_ModelTest extends TestCase
      */
     public static function removeDatabses()
     {
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->unInstall();
     }
 
@@ -75,7 +78,7 @@ class Term_ModelTest extends TestCase
         $item = new CMS_Term();
         $item->name = 'term-' . rand();
         $item->slug = 'slug-' . rand();
-        Test_Assert::assertTrue($item->create(), 'Impossible to create CMS_Term');
+        $this->assertTrue($item->create(), 'Impossible to create CMS_Term');
     }
 
     /**
@@ -88,12 +91,12 @@ class Term_ModelTest extends TestCase
         $item = new CMS_Term();
         $item->name = 'term-' . rand();
         $item->slug = 'slug-' . rand();
-        Test_Assert::assertTrue($item->create(), 'Impossible to create CMS_Term');
+        $this->assertTrue($item->create(), 'Impossible to create CMS_Term');
         
         $item2 = new CMS_Term();
         $item2->name = 'term-' . rand();
         $item2->slug = $item->slug;
-        Test_Assert::assertFalse($item2->create(), 'Two Term with the same slug should not be created');
+        $this->assertFalse($item2->create(), 'Two Term with the same slug should not be created');
     }
     
 

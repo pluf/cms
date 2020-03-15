@@ -16,16 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\IncompleteTestError;
-require_once 'Pluf.php';
+namespace Pluf\Test\Content;
 
-/**
- *
- * @backupGlobals disabled
- * @backupStaticAttributes disabled
- */
-class Content_AuthorRestTest extends TestCase
+use Pluf\Test\Client;
+use Pluf\Test\TestCase;
+use CMS_Content;
+use Exception;
+use Pluf;
+use Pluf_Migration;
+use Pluf_Exception_PermissionDenied;
+use Pluf_HTTP_Error404;
+use User_Account;
+use User_Credential;
+use User_Role;
+
+
+class AuthorRestTest extends TestCase
 {
 
     var $client;
@@ -40,7 +46,7 @@ class Content_AuthorRestTest extends TestCase
     public static function createDataBase()
     {
         Pluf::start(__DIR__ . '/../conf/config.php');
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->install();
         $m->init();
 
@@ -89,7 +95,7 @@ class Content_AuthorRestTest extends TestCase
      */
     public static function removeDatabses()
     {
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->unInstall();
     }
 
@@ -99,20 +105,7 @@ class Content_AuthorRestTest extends TestCase
      */
     public function init()
     {
-        $this->client = new Test_Client(array(
-            array(
-                'app' => 'Cms',
-                'regex' => '#^/cms#',
-                'base' => '',
-                'sub' => include 'CMS/urls-v2.php'
-            ),
-            array(
-                'app' => 'User',
-                'regex' => '#^/user#',
-                'base' => '',
-                'sub' => include 'User/urls-v2.php'
-            )
-        ));
+        $this->client = new Client();
         // login
         $response = $this->client->post('/user/login', array(
             'login' => 'author1',
@@ -160,7 +153,7 @@ class Content_AuthorRestTest extends TestCase
         $content->title = 'Title ' . rand();
         $content->description = 'It is my content description';
         $content->author_id = $this->author1;
-        Test_Assert::assertTrue($content->create(), 'Impossible to create cms content');
+        $this->assertTrue($content->create(), 'Impossible to create cms content');
         // Author could change content created by himself
         $form = array(
             'name' => 'updated name',
@@ -188,7 +181,7 @@ class Content_AuthorRestTest extends TestCase
         $content->title = 'Title ' . rand();
         $content->description = 'It is my content description';
         $content->author_id = $this->author2;
-        Test_Assert::assertTrue($content->create(), 'Impossible to create cms content');
+        $this->assertTrue($content->create(), 'Impossible to create cms content');
         // Author could not change content created by another author
         $this->expectException(Pluf_Exception_PermissionDenied::class);
         $form = array(
@@ -217,7 +210,7 @@ class Content_AuthorRestTest extends TestCase
         $content->title = 'Title ' . rand();
         $content->description = 'It is my content description';
         $content->author_id = $this->author1;
-        Test_Assert::assertTrue($content->create(), 'Impossible to create cms content');
+        $this->assertTrue($content->create(), 'Impossible to create cms content');
         // Author could delete content created by himself
         $response = $this->client->delete('/cms/contents/' . $content->id);
         $this->assertEquals($response->status_code, 200);
@@ -239,7 +232,7 @@ class Content_AuthorRestTest extends TestCase
         $content->title = 'Title ' . rand();
         $content->description = 'It is my content description';
         $content->author_id = $this->author2;
-        Test_Assert::assertTrue($content->create(), 'Impossible to create cms content');
+        $this->assertTrue($content->create(), 'Impossible to create cms content');
         // Author could not delete content created by another author
         $this->expectException(Pluf_Exception_PermissionDenied::class);
         $response = $this->client->delete('/cms/contents/' . $content->id);

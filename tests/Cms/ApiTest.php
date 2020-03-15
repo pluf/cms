@@ -16,15 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-use PHPUnit\Framework\TestCase;
+namespace Pluf\Test\Cms;
 
-require_once 'Pluf.php';
+use Pluf\Test\TestCase;
+use Pluf;
 
-/**
- * @backupGlobals disabled
- * @backupStaticAttributes disabled
- */
-class CmsApiTest extends TestCase
+use CMS_Content;
+use CMS_ContentHistory;
+use CMS_ContentMeta;
+use CMS_Term;
+use CMS_TermMeta;
+use CMS_TermTaxonomy;
+
+
+class ApiTest extends TestCase
 {
 
     /**

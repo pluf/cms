@@ -16,15 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\IncompleteTestError;
+namespace Pluf\Test\Content;
 
-require_once 'Pluf.php';
+use Pluf\Test\TestCase;
+use CMS_Content;
+use Pluf;
+use Pluf_Migration;
 
-/**
- * @backupGlobals disabled
- * @backupStaticAttributes disabled
- */
+
+
 class Content_FieldsTest extends TestCase
 {
 
@@ -34,7 +34,7 @@ class Content_FieldsTest extends TestCase
     public static function createDataBase()
     {
         Pluf::start(__DIR__ . '/../conf/config.php');
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->install();
     }
 
@@ -43,7 +43,7 @@ class Content_FieldsTest extends TestCase
      */
     public static function removeDatabses()
     {
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->unInstall();
     }
 
@@ -58,8 +58,8 @@ class Content_FieldsTest extends TestCase
         $content->name = 'test content' . rand();
         $content->mime_type = $mime_type;
         $content->create();
-        Test_Assert::assertFalse($content->isAnonymous(), 'Object is not created');
-        Test_Assert::assertEquals($mime_type, $content->mime_type);
+        $this->assertFalse($content->isAnonymous(), 'Object is not created');
+        $this->assertEquals($mime_type, $content->mime_type);
     }
     /**
      * @test
@@ -72,19 +72,19 @@ class Content_FieldsTest extends TestCase
         $content->name = 'test content' . rand();
         $content->mime_type = $mime_type;
         $content->create();
-        Test_Assert::assertFalse($content->isAnonymous(), 'Object is not created');
-        Test_Assert::assertEquals($mime_type, $content->mime_type);
+        $this->assertFalse($content->isAnonymous(), 'Object is not created');
+        $this->assertEquals($mime_type, $content->mime_type);
         
         $content2 = new CMS_Content($content->id);
-        Test_Assert::assertFalse($content2->isAnonymous(), 'Object is not created');
-        Test_Assert::assertEquals($mime_type, $content2->mime_type);
+        $this->assertFalse($content2->isAnonymous(), 'Object is not created');
+        $this->assertEquals($mime_type, $content2->mime_type);
         
         $content2->download = 10;
         $content2->update();
         
         $content3 = new CMS_Content($content->id);
-        Test_Assert::assertFalse($content3->isAnonymous(), 'Object is not created');
-        Test_Assert::assertEquals($mime_type, $content3->mime_type);
+        $this->assertFalse($content3->isAnonymous(), 'Object is not created');
+        $this->assertEquals($mime_type, $content3->mime_type);
     }
 }
 

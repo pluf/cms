@@ -16,16 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\IncompleteTestError;
+namespace Pluf\Test\TermTaxonomy;
 
-require_once 'Pluf.php';
+use Pluf\Test\TestCase;
+use CMS_Content;
+use CMS_Term;
+use CMS_TermTaxonomy;
+use Exception;
+use Pluf;
+use Pluf_Migration;
+use User_Account;
+use User_Credential;
+use User_Role;
 
-/**
- * @backupGlobals disabled
- * @backupStaticAttributes disabled
- */
-class TermTaxonomy_ModelTest extends TestCase
+class ModelTest extends TestCase
 {
     /**
      * @beforeClass
@@ -33,7 +37,7 @@ class TermTaxonomy_ModelTest extends TestCase
     public static function createDataBase()
     {
         Pluf::start(__DIR__ . '/../conf/config.php');
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->install();
         $m->init();
         
@@ -63,7 +67,7 @@ class TermTaxonomy_ModelTest extends TestCase
      */
     public static function removeDatabses()
     {
-        $m = new Pluf_Migration(Pluf::f('installed_apps'));
+        $m = new Pluf_Migration();
         $m->unInstall();
     }
 
@@ -75,20 +79,20 @@ class TermTaxonomy_ModelTest extends TestCase
         $term = new CMS_Term();
         $term->name = 'term-' . rand();
         $term->slug = 'slug-' . rand();
-        Test_Assert::assertTrue($term->create(), 'Impossible to create CMS_Term');
+        $this->assertTrue($term->create(), 'Impossible to create CMS_Term');
         
         // TermTaxonomy without term
         $item = new CMS_TermTaxonomy();
         $item->taxonomy = 'term-taxonomy-' . rand();
         $item->description = 'description about term taxonomy';
-        Test_Assert::assertTrue($item->create(), 'Impossible to create CMS_TermTaxonomy');
+        $this->assertTrue($item->create(), 'Impossible to create CMS_TermTaxonomy');
 
         // TermTaxonomy with a term
         $item = new CMS_TermTaxonomy();
         $item->taxonomy = 'term-taxonomy-' . rand();
         $item->description = 'description about term taxonomy';
         $item->term_id = $term;
-        Test_Assert::assertTrue($item->create(), 'Impossible to create CMS_TermTaxonomy');
+        $this->assertTrue($item->create(), 'Impossible to create CMS_TermTaxonomy');
     }
 
     /**
@@ -99,22 +103,22 @@ class TermTaxonomy_ModelTest extends TestCase
         $term = new CMS_Term();
         $term->name = 'term-' . rand();
         $term->slug = 'slug-' . rand();
-        Test_Assert::assertTrue($term->create(), 'Impossible to create CMS_Term');
+        $this->assertTrue($term->create(), 'Impossible to create CMS_Term');
         
         $term = new CMS_Term($term->id);
         $ttList = $term->get_term_taxonomies_list();
-        Test_Assert::assertEquals(0, $ttList->count());
+        $this->assertEquals(0, $ttList->count());
         
         // TermTaxonomy with a term
         $item = new CMS_TermTaxonomy();
         $item->taxonomy = 'term-taxonomy-' . rand();
         $item->description = 'description about term taxonomy';
         $item->term_id = $term;
-        Test_Assert::assertTrue($item->create(), 'Impossible to create CMS_TermTaxonomy');
+        $this->assertTrue($item->create(), 'Impossible to create CMS_TermTaxonomy');
         
         // Get term taxonomies after adding one to the term
         $ttList = $term->get_term_taxonomies_list();
-        Test_Assert::assertEquals(1, $ttList->count());
+        $this->assertEquals(1, $ttList->count());
     }
     
     /**
@@ -126,23 +130,23 @@ class TermTaxonomy_ModelTest extends TestCase
         $content->name = 'content-' . rand();
         $content->titme = 'title-' . rand();
         $content->titme = 'description of content';
-        Test_Assert::assertTrue($content->create(), 'Impossible to create CMS_Content');
+        $this->assertTrue($content->create(), 'Impossible to create CMS_Content');
         
         $content = new CMS_Content($content->id);
         $ttList = $content->get_term_taxonomies_list();
-        Test_Assert::assertEquals(0, $ttList->count());
+        $this->assertEquals(0, $ttList->count());
         
         // Add relation between a TermTaxonomy and a Conetnt 
         $item = new CMS_TermTaxonomy();
         $item->taxonomy = 'term-taxonomy-' . rand();
         $item->description = 'description about term taxonomy';
-        Test_Assert::assertTrue($item->create(), 'Impossible to create CMS_TermTaxonomy');
+        $this->assertTrue($item->create(), 'Impossible to create CMS_TermTaxonomy');
         
         $item->setAssoc($content);
         
         // Get term taxonomies after adding one to the term
         $ttList = $content->get_term_taxonomies_list();
-        Test_Assert::assertEquals(1, $ttList->count());
+        $this->assertEquals(1, $ttList->count());
     }
     
     /**
@@ -154,23 +158,23 @@ class TermTaxonomy_ModelTest extends TestCase
         $content->name = 'content-' . rand();
         $content->titme = 'title-' . rand();
         $content->titme = 'description of content';
-        Test_Assert::assertTrue($content->create(), 'Impossible to create CMS_Content');
+        $this->assertTrue($content->create(), 'Impossible to create CMS_Content');
         
         // Add relation between a TermTaxonomy and a Content
         $item = new CMS_TermTaxonomy();
         $item->taxonomy = 'term-taxonomy-' . rand();
         $item->description = 'description about term taxonomy';
-        Test_Assert::assertTrue($item->create(), 'Impossible to create CMS_TermTaxonomy');
+        $this->assertTrue($item->create(), 'Impossible to create CMS_TermTaxonomy');
         
         // Get contents before adding one to the term
         $contentList = $item->get_contents_list();
-        Test_Assert::assertEquals(0, $contentList->count());
+        $this->assertEquals(0, $contentList->count());
         
         $item->setAssoc($content);
         
         // Get contents after adding one to the term
         $contentList = $item->get_contents_list();
-        Test_Assert::assertEquals(1, $contentList->count());
+        $this->assertEquals(1, $contentList->count());
     }
 
 }
