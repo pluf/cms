@@ -19,7 +19,7 @@ $cfg['installed_apps'] = array(
  * Middlewares
  */
 $cfg['middleware_classes'] = array(
-    'Pluf_Middleware_Session',
+    '\Pluf\Middleware\Session',
     'User_Middleware_Session'
 );
 
@@ -30,7 +30,7 @@ $cfg['secret_key'] = 'simple key';
 // It must be writeable by your webserver instance.
 // It is mandatory if you are using the template system.
 $cfg['tmp_folder'] = '/tmp';
-$cfg['upload_path'] = __DIR__ . '/../storage/tenant';
+$cfg['upload_path'] = '/tmp';
 
 // The folder in which the templates of the application are located.
 $cfg['template_folders'] = array(

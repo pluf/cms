@@ -33,13 +33,15 @@ after_success:
   - travis_retry composer require --dev codeclimate/php-test-reporter --no-interaction
   - travis_retry vendor/bin/test-reporter
   - travis_retry composer remove --dev codeclimate/php-test-reporter --no-interaction
-
+  
 notifications:
   email:
-    - mostafabarmshory+eeqna5hwqenxwczq7lax@boards.trello.com
-  on_success: never
-  on_failure: always
-  on_error: always
+    recipients:
+      - mostafabarmshory+eeqna5hwqenxwczq7lax@boards.trello.com
+      - mostafa.barmshory@gmail.com
+      - mohammad.hadi.mansouri@gmail.com
+    on_success: never
+    on_failure: always
 
 branches:
   only:
