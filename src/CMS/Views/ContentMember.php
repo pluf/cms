@@ -91,7 +91,7 @@ class CMS_Views_ContentMember extends Pluf_Views
         );
         $users = $user->getList($param);
         if ($users->count() == 0) {
-            throw new Pluf_Exception_DoesNotExist('Content has not such member');
+            throw new \Pluf\Exception_DoesNotExist('Content has not such member');
         }
         return $users[0];
     }

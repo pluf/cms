@@ -23,7 +23,7 @@ use CMS_Term;
 use Exception;
 use Pluf;
 use Pluf_Migration;
-use Pluf_Exception;
+use \Pluf\Exception;
 use User_Account;
 use User_Credential;
 use User_Role;
@@ -86,7 +86,7 @@ class ModelTest extends TestCase
      */
     public function slugUniquenessTest()
     {
-        $this->expectException(Pluf_Exception::class);
+        $this->expectException(\Pluf\Exception::class);
         
         $item = new CMS_Term();
         $item->name = 'term-' . rand();

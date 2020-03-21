@@ -51,7 +51,7 @@ class CMS_Form_ContentCreate extends Pluf_Form_Model
     function save($commit = true)
     {
         if (! $this->isValid()) {
-            throw new Pluf_Exception_Form('cannot save the content from an invalid form', $this);
+            throw new \Pluf\Exception_Form('cannot save the content from an invalid form', $this);
         }
         // Create the content
         $content = new CMS_Content();

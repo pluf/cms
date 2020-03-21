@@ -88,13 +88,13 @@ function CMS_Shortcuts_GetTermBySlugOr404 ($slug)
  * این فراخوانی در فرم‌ها کاربرد دارد.
  *
  * @param string $name            
- * @throws Pluf_Exception
+ * @throws \Pluf\Exception
  * @return string
  */
 function CMS_Shortcuts_CleanName ($name)
 {
     if ($name === 'new' || $name === 'find') {
-        throw new Pluf_Exception(__('content name must not be new, find'));
+        throw new \Pluf\Exception(__('content name must not be new, find'));
     }
     $q = new Pluf_SQL('name=%s', array(
             $name
@@ -106,6 +106,6 @@ function CMS_Shortcuts_CleanName ($name)
     if (! isset($items) || $items->count() == 0) {
         return $name;
     }
-    throw new Pluf_Exception(
+    throw new \Pluf\Exception(
             sprintf(__('content with the same name exist (name: %s'), $name));
 }

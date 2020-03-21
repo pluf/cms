@@ -257,7 +257,7 @@ class CMS_Content extends Pluf_Model
         $this->_internal = true;
         try{
             $this->update($where);
-        }catch (Pluf_Exception $e){
+        }catch (\Pluf\Exception $e){
         }
         $this->_internal = false;
     }

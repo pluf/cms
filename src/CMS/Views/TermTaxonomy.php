@@ -31,14 +31,14 @@ class CMS_Views_TermTaxonomy extends Pluf_Views
             $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $request->REQUEST['id']);
         }
         if (! isset($content)) {
-            throw new Pluf_Exception_BadRequest('Content is not determined');
+            throw new \Pluf\Exception_BadRequest('Content is not determined');
         }
         // بررسی دسترسی‌ها
         if (! CMS_Precondition::isAuthor($request)) {
-            throw new Pluf_Exception_PermissionDenied('You are not an author');
+            throw new \Pluf\Exception_PermissionDenied('You are not an author');
         }
         if (! CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id) {
-            throw new Pluf_Exception_PermissionDenied('You can not change content created by another author');
+            throw new \Pluf\Exception_PermissionDenied('You can not change content created by another author');
         }
         // Check if association is existed already
         $relatedContents = $tt->get_contents_ids_list(array(
@@ -94,14 +94,14 @@ class CMS_Views_TermTaxonomy extends Pluf_Views
             $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $request->REQUEST['id']);
         }
         if (! isset($content)) {
-            throw new Pluf_Exception_BadRequest('Content is not determined');
+            throw new \Pluf\Exception_BadRequest('Content is not determined');
         }
         // بررسی دسترسی‌ها
         if (! CMS_Precondition::isAuthor($request)) {
-            throw new Pluf_Exception_PermissionDenied('You are not an author');
+            throw new \Pluf\Exception_PermissionDenied('You are not an author');
         }
         if (! CMS_Precondition::isEditor($request) && $request->user->id !== $content->author_id) {
-            throw new Pluf_Exception_PermissionDenied('You can not change content created by another author');
+            throw new \Pluf\Exception_PermissionDenied('You can not change content created by another author');
         }
         // Check if association is existed
         $relatedContents = $tt->get_contents_ids_list(array(
