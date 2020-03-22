@@ -20,62 +20,54 @@
 
 /**
  * Get content based on name
- * 
+ *
  * @param string $name
  * @throws CMS_Exception_ObjectNotFound
  * @return ArrayObject
  */
-function CMS_Shortcuts_GetNamedContentOr404 ($name)
+function CMS_Shortcuts_GetNamedContentOr404($name)
 {
     $q = new Pluf_SQL('name=%s', array(
-            $name
+        $name
     ));
     $item = new CMS_Content();
-    $item = $item->getList(
-            array(
-                    'filter' => $q->gen()
-            ));
+    $item = $item->getList(array(
+        'filter' => $q->gen()
+    ));
     if (isset($item) && $item->count() == 1) {
         return $item[0];
     }
     if ($item->count() > 1) {
-        Pluf_Log::error(
-                sprintf(
-                        'more than one content exist with the name $s', $name));
+        Pluf_Log::error(sprintf('more than one content exist with the name $s', $name));
         return $item[0];
     }
-    throw new CMS_Exception_ObjectNotFound(
-            "CMS content not found (Content name:" . $name . ")");
+    throw new CMS_Exception_ObjectNotFound("CMS content not found (Content name:" . $name . ")");
 }
 
 /**
  * Get term by its slug
- * 
+ *
  * @param string $slug
  * @throws CMS_Exception_ObjectNotFound
  * @return CMS_Term
  */
-function CMS_Shortcuts_GetTermBySlugOr404 ($slug)
+function CMS_Shortcuts_GetTermBySlugOr404($slug)
 {
     $q = new Pluf_SQL('slug=%s', array(
-            $slug
+        $slug
     ));
     $item = new CMS_Term();
-    $item = $item->getList(
-            array(
-                    'filter' => $q->gen()
-            ));
+    $item = $item->getList(array(
+        'filter' => $q->gen()
+    ));
     if (isset($item) && $item->count() == 1) {
         return $item[0];
     }
     if ($item->count() > 1) {
-        Pluf_Log::error(
-                sprintf(
-                        'more than one term exist with the slug $s', $slug));
+        Pluf_Log::error(sprintf('more than one term exist with the slug $s', $slug));
         return $item[0];
     }
-    throw new CMS_Exception_ObjectNotFound(
-            "CMS term not found (Term slug:" . $slug . ")");
+    throw new CMS_Exception_ObjectNotFound("CMS term not found (Term slug:" . $slug . ")");
 }
 
 /**
@@ -87,25 +79,23 @@ function CMS_Shortcuts_GetTermBySlugOr404 ($slug)
  *
  * این فراخوانی در فرم‌ها کاربرد دارد.
  *
- * @param string $name            
+ * @param string $name
  * @throws \Pluf\Exception
  * @return string
  */
-function CMS_Shortcuts_CleanName ($name)
+function CMS_Shortcuts_CleanName($name)
 {
     if ($name === 'new' || $name === 'find') {
-        throw new \Pluf\Exception(__('content name must not be new, find'));
+        throw new \Pluf\Exception('content name must not be new, find');
     }
     $q = new Pluf_SQL('name=%s', array(
-            $name
+        $name
     ));
-    $items = Pluf::factory('CMS_Content')->getList(
-            array(
-                    'filter' => $q->gen()
-            ));
+    $items = Pluf::factory('CMS_Content')->getList(array(
+        'filter' => $q->gen()
+    ));
     if (! isset($items) || $items->count() == 0) {
         return $name;
     }
-    throw new \Pluf\Exception(
-            sprintf(__('content with the same name exist (name: %s'), $name));
+    throw new \Pluf\Exception(sprintf('content with the same name exist (name: %s', $name));
 }

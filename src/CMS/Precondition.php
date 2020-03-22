@@ -37,7 +37,7 @@ class CMS_Precondition
      * </ul>
      *
      * @param Pluf_HTTP_Request
-     * @return boolean|\Pluf\Exception_PermissionDenied
+     * @return boolean|Pluf_Exception_PermissionDenied
      */
     static public function authorRequired($request)
     {
@@ -50,7 +50,7 @@ class CMS_Precondition
         $request->user->hasPerm('cms.author')) {
             return true;
         }
-        throw new \Pluf\Exception_PermissionDenied();
+        throw new Pluf_Exception_PermissionDenied();
     }
     /**
      * Check if the user is an author.
@@ -87,7 +87,7 @@ class CMS_Precondition
      * </ul>
      *
      * @param Pluf_HTTP_Request
-     * @return boolean|\Pluf\Exception_PermissionDenied
+     * @return boolean|Pluf_Exception_PermissionDenied
      */
     static public function editorRequired($request)
     {

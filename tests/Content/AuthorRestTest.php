@@ -24,7 +24,7 @@ use CMS_Content;
 use Exception;
 use Pluf;
 use Pluf_Migration;
-use \Pluf\Exception_PermissionDenied;
+use Pluf_Exception_PermissionDenied;
 use Pluf_HTTP_Error404;
 use User_Account;
 use User_Credential;
@@ -183,7 +183,7 @@ class AuthorRestTest extends TestCase
         $content->author_id = $this->author2;
         $this->assertTrue($content->create(), 'Impossible to create cms content');
         // Author could not change content created by another author
-        $this->expectException(\Pluf\Exception_PermissionDenied::class);
+        $this->expectException(Pluf_Exception_PermissionDenied::class);
         $form = array(
             'name' => 'updated name',
             'title' => 'updated title',
@@ -234,7 +234,7 @@ class AuthorRestTest extends TestCase
         $content->author_id = $this->author2;
         $this->assertTrue($content->create(), 'Impossible to create cms content');
         // Author could not delete content created by another author
-        $this->expectException(\Pluf\Exception_PermissionDenied::class);
+        $this->expectException(Pluf_Exception_PermissionDenied::class);
         $response = $this->client->delete('/cms/contents/' . $content->id);
         $this->assertEquals($response->status_code, 403);
         
