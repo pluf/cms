@@ -23,7 +23,6 @@ use CMS_Term;
 use Exception;
 use Pluf;
 use Pluf_Migration;
-use \Pluf\Exception;
 use User_Account;
 use User_Credential;
 use User_Role;
