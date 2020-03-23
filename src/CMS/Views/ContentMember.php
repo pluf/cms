@@ -1,6 +1,14 @@
 <?php
 Pluf::loadFunction('Pluf_Shortcuts_GetObjectOr404');
 
+/**
+ * A member of document
+ * 
+ * A member is a person who manage lifecycle of content in the system.
+ * 
+ * @author hadi <mohammad.hadi.mansouri@dpq.co.ir>
+ *
+ */
 class CMS_Views_ContentMember extends Pluf_Views
 {
     public function members($request, $match)

@@ -32,7 +32,7 @@ class CMS_Views extends Pluf_Views
      *
      * @param Pluf_HTTP_Request $request
      * @param array $match
-     * @throws Pluf_Exception
+     * @throws \Pluf\Exception
      * @return Pluf_HTTP_Response_Json
      */
     public function create($request, $match)
@@ -52,7 +52,7 @@ class CMS_Views extends Pluf_Views
         $form = new CMS_Form_ContentUpdate(array_merge($request->REQUEST, $request->FILES), $extra);
         try {
             $content = $form->save();
-        } catch (Pluf_Exception $e) {
+        } catch ( \Pluf\Exception $e) {
             $content = $extra['model'];
             $content->delete();
             throw $e;
@@ -214,7 +214,7 @@ class CMS_Views extends Pluf_Views
      */
     public function updateThumbnail($request, $match)
     {
-        throw new Pluf_Exception('Not implemented yet!');
+        throw new  \Pluf\Exception('Not implemented yet!');
     }
 
     public static function addTermTaxonomy($request, $match)
@@ -321,7 +321,7 @@ class CMS_Views extends Pluf_Views
      *
      * @param Pluf_HTTP_Request $request
      * @param CMS_Content $content
-     * @throws Pluf_Exception
+     * @throws \Pluf\Exception
      * @return boolean
      */
     public static function checkAccess($request, $content)
@@ -333,7 +333,7 @@ class CMS_Views extends Pluf_Views
         if (0 == $content->getCount(array(
             'filter' => $sql->gen()
         ))) {
-            throw new Pluf_Exception("You are not allowed to access to this content.");
+            throw new \Pluf\Exception("You are not allowed to access to this content.");
         }
         return true;
     }
@@ -379,7 +379,7 @@ class CMS_Views extends Pluf_Views
             $updatedContent = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $content->id);
             return $updatedContent;
         }
-        return new Pluf_Exception('An error is occurred while processing content');
+        return new \Pluf\Exception('An error is occurred while processing content');
     }
    
 }

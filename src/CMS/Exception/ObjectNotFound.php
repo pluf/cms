@@ -23,14 +23,14 @@
  * @author hadi <mohammad.hadi.mansouri@dpq.co.ir>
  *
  */
-class CMS_Exception_ObjectNotFound extends Pluf_Exception
+class CMS_Exception_ObjectNotFound extends \Pluf\Exception
 {
 
     /**
      * یک نمونه از این کلاس ایجاد می‌کند.
      *
      * @param string $message            
-     * @param Pluf_Exception $previous            
+     * @param \Pluf\Exception $previous            
      * @param string $link            
      * @param string $developerMessage            
      */
