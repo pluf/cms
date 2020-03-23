@@ -33,7 +33,7 @@ after_success:
   - travis_retry composer require --dev codeclimate/php-test-reporter --no-interaction
   - travis_retry vendor/bin/test-reporter
   - travis_retry composer remove --dev codeclimate/php-test-reporter --no-interaction
-  
+
 notifications:
   email:
     recipients:
