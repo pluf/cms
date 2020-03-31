@@ -90,9 +90,9 @@ class CMS_Content_Manager_Editoral extends CMS_Content_Manager_Abstract
                 'properties' => CMS_Content_Event::COMMON_PROPERTIES,
                 'action' => CMS_Content_Event::ADD_COMMENT_ACTION
             )
-        ),
+        )
     );
-    
+
     /**
      * State machine of the manager
      */
@@ -111,8 +111,10 @@ class CMS_Content_Manager_Editoral extends CMS_Content_Manager_Abstract
         if (CMS_Precondition::isEditor($request)) {
             return new Pluf_SQL();
         }
-        if(CMS_Precondition::isAuthor($request)){
-            return new Pluf_SQL('author_id=%d', array($request->user->id));
+        if (CMS_Precondition::isAuthor($request)) {
+            return new Pluf_SQL('author_id=%d', array(
+                $request->user->id
+            ));
         }
         return new Pluf_SQL('false');
     }

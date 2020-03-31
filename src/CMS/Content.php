@@ -41,41 +41,41 @@ class CMS_Content extends Pluf_Model
         $this->_a['cols'] = array(
             // Identifier
             'id' => array(
-                'type' => 'Pluf_DB_Field_Sequence',
+                'type' => 'Sequence',
                 'is_null' => false,
                 'editable' => false
             ),
             // Fields
             'name' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'is_null' => false,
                 'size' => 64,
                 'unique' => true,
                 'editable' => true
             ),
             'title' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'is_null' => true,
                 'size' => 250,
                 'default' => '',
                 'editable' => true
             ),
             'description' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'is_null' => true,
                 'size' => 2048,
                 'default' => 'auto created content',
                 'editable' => true
             ),
             'mime_type' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'is_null' => true,
                 'size' => 64,
                 'default' => 'application/octet-stream',
                 'editable' => true
             ),
             'media_type' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'is_null' => true,
                 'size' => 64,
                 'default' => 'application/octet-stream',
@@ -84,7 +84,7 @@ class CMS_Content extends Pluf_Model
                 'editable' => true
             ),
             'file_path' => array(
-                'type' => 'Pluf_DB_Field_File',
+                'type' => 'File',
                 'is_null' => false,
                 'size' => 250,
                 'verbose' => 'File path',
@@ -93,7 +93,7 @@ class CMS_Content extends Pluf_Model
                 'readable' => false
             ),
             'file_name' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'is_null' => false,
                 'size' => 250,
                 'default' => 'unknown',
@@ -102,7 +102,7 @@ class CMS_Content extends Pluf_Model
                 'editable' => true
             ),
             'file_size' => array(
-                'type' => 'Pluf_DB_Field_Integer',
+                'type' => 'Integer',
                 'is_null' => false,
                 'default' => 'no title',
                 'verbose' => 'file size',
@@ -110,64 +110,64 @@ class CMS_Content extends Pluf_Model
                 'editable' => false
             ),
             'downloads' => array(
-                'type' => 'Pluf_DB_Field_Integer',
+                'type' => 'Integer',
                 'is_null' => false,
                 'default' => 0,
                 'help_text' => 'content downloads number',
                 'editable' => false
             ),
             'state' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'is_null' => true,
                 'size' => 64,
                 'default' => '',
                 'editable' => false
             ),
 //             'manager' => array(
-//                 'type' => 'Pluf_DB_Field_Varchar',
+//                 'type' => 'Varchar',
 //                 'blank' => true,
 //                 'size' => 100,
 //                 'editable' => false,
 //                 'readable' => true
 //             ),
             'password' => array(
-                'type' => 'Pluf_DB_Field_Password',
+                'type' => 'Password',
                 'is_null' => true,
                 'size' => 150,
-                'help_text' => __('Format: [algo]:[salt]:[hash]'),
+                'help_text' => 'Format: [algo]:[salt]:[hash]',
                 'editable' => false,
                 'readable' => false
             ),
             'comment_status' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'is_null' => true,
                 'size' => 64,
                 'default' => NULL,
                 'editable' => false
             ),
             'comment_count' => array(
-                'type' => 'Pluf_DB_Field_Integer',
+                'type' => 'Integer',
                 'is_null' => false,
                 'default' => 0,
                 'help_text' => 'number of comments on the content',
                 'editable' => false
             ),
             'cache_policy' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'is_null' => true,
                 'size' => 512,
                 'default' => 'max-age=21600', // can be cached by browser and any intermediary caches for up to 6 hour
                 'editable' => true
             ),
             'creation_dtime' => array(
-                'type' => 'Pluf_DB_Field_Datetime',
+                'type' => 'Datetime',
                 'blank' => true,
                 'verbose' => 'creation',
                 'help_text' => 'content creation time',
                 'editable' => false
             ),
             'modif_dtime' => array(
-                'type' => 'Pluf_DB_Field_Datetime',
+                'type' => 'Datetime',
                 'blank' => true,
                 'verbose' => 'modification',
                 'help_text' => 'content modification time',
@@ -177,7 +177,7 @@ class CMS_Content extends Pluf_Model
              * Foreign keys
              */
             'author_id' => array(
-                'type' => 'Pluf_DB_Field_Foreignkey',
+                'type' => 'Foreignkey',
                 'model' => 'User_Account',
                 'is_null' => false,
                 'name' => 'author',
@@ -186,7 +186,7 @@ class CMS_Content extends Pluf_Model
                 'editable' => false
             ),
             'parent_id' => array(
-                'type' => 'Pluf_DB_Field_Foreignkey',
+                'type' => 'Foreignkey',
                 'model' => 'CMS_Content',
                 'is_null' => true,
                 'name' => 'parent',
@@ -196,7 +196,7 @@ class CMS_Content extends Pluf_Model
                 'readable' => true
             ),
             'members' => array(
-                'type' => 'Pluf_DB_Field_Manytomany',
+                'type' => 'Manytomany',
                 'model' => 'User_Account',
                 'name' => 'members',
                 'graphql_name' => 'members',

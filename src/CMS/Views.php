@@ -259,18 +259,20 @@ class CMS_Views extends Pluf_Views
     {
         $content = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $match['parentId']);
         $tt = new CMS_TermTaxonomy();
-        Pluf::loadFunction('Pluf_Shortcuts_GetAssociationTableName');
-        $assoc = $tt->_con->pfx . Pluf_Shortcuts_GetAssociationTableName('CMS_Content', 'CMS_TermTaxonomy');
-        $tt_table = $tt->_con->pfx . $tt->_a['table'];
-        Pluf::loadFunction('Pluf_Shortcuts_GetForeignKeyName');
-        $tt_fk = Pluf_Shortcuts_GetForeignKeyName('CMS_TermTaxonomy');
-        $content_fk = Pluf_Shortcuts_GetForeignKeyName('CMS_Content');
-        $tt->_a['views'] = array(
-            'join_content' => array(
-                'join' => 'LEFT JOIN ' . $assoc . ' ON ' . $tt_table . '.id=' . $tt_fk
-            )
-        );
-        $sql = new Pluf_SQL('`' . $content_fk . '`=%s', array(
+        
+        $engine = $content->getEngine();
+        $schema = $engine->getSchema();
+        
+        $assoc = $schema->getRelationTable($tt, $content);
+        $tt_table = $schema->getTableName($tt);
+        $tt_fk = $schema->getAssocField($tt);
+        $content_fk = $schema->getAssocField($content);
+        
+        
+        $tt->setView('join_content',  array(
+            'join' => 'LEFT JOIN ' . $assoc . ' ON ' . $tt_table . '.id=' . $tt_fk
+        ));
+        $sql = new Pluf_SQL($content_fk . '=%s', array(
             $content->id
         ));
         $builder = new Pluf_Paginator_Builder($tt);
