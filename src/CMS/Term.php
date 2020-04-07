@@ -47,7 +47,7 @@ class CMS_Term extends Pluf_Model
         $this->_a['cols'] = array(
             // ID
             'id' => array(
-                'type' => 'Pluf_DB_Field_Sequence',
+                'type' => 'Sequence',
                 'blank' => false,
                 'verbose' => 'first name',
                 'help_text' => 'id',
@@ -55,14 +55,14 @@ class CMS_Term extends Pluf_Model
             ),
             // Fields
             'name' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'is_null' => false,
                 'size' => 200,
                 'default' => '',
                 'editable' => true
             ),
             'slug' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'is_null' => true,
                 'unique' => true,
                 'size' => 256,

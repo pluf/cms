@@ -38,27 +38,27 @@ class CMS_TermMeta extends Pluf_Model
         $this->_a['cols'] = array(
             // Identifier
             'id' => array(
-                'type' => 'Pluf_DB_Field_Sequence',
+                'type' => 'Sequence',
                 'is_null' => false,
                 'editable' => false
             ),
             // Fields
             'key' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'is_null' => false,
                 'size' => 256,
                 'unique' => true,
                 'editable' => true
             ),
             'value' => array(
-                'type' => 'Pluf_DB_Field_Text',
+                'type' => 'Text',
                 'is_null' => true,
                 'default' => '',
                 'editable' => true
             ),
             // Foreign keys
             'term_id' => array(
-                'type' => 'Pluf_DB_Field_Foreignkey',
+                'type' => 'Foreignkey',
                 'model' => 'CMS_Term',
                 'name' => 'term',
                 'graphql_name' => 'term',

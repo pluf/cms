@@ -52,27 +52,27 @@ class CMS_TermTaxonomy extends Pluf_Model
         $this->_a['cols'] = array(
             // ID
             'id' => array(
-                'type' => 'Pluf_DB_Field_Sequence',
+                'type' => 'Sequence',
                 'blank' => false,
                 'editable' => false
             ),
             // Fields
             'taxonomy' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'blank' => true,
                 'size' => 128,
                 'default' => '',
                 'editable' => true
             ),
             'description' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'blank' => true,
                 'size' => 2048,
                 'default' => '',
                 'editable' => true
             ),
             'count' => array(
-                'type' => 'Pluf_DB_Field_Integer',
+                'type' => 'Integer',
                 'blank' => false,
                 'default' => 0,
                 'editable' => false
@@ -81,7 +81,7 @@ class CMS_TermTaxonomy extends Pluf_Model
              * Foreign keys
              */
             'term_id' => array(
-                'type' => 'Pluf_DB_Field_Foreignkey',
+                'type' => 'Foreignkey',
                 'model' => 'CMS_Term',
                 'name' => 'term',
                 'graphql_name' => 'term',
@@ -90,7 +90,7 @@ class CMS_TermTaxonomy extends Pluf_Model
                 'editable' => true
             ),
             'parent_id' => array(
-                'type' => 'Pluf_DB_Field_Foreignkey',
+                'type' => 'Foreignkey',
                 'model' => 'CMS_TermTaxonomy',
                 'name' => 'parent',
                 'graphql_name' => 'parent',
@@ -99,7 +99,7 @@ class CMS_TermTaxonomy extends Pluf_Model
                 'editable' => true
             ),
             'contents_ids' => array(
-                'type' => 'Pluf_DB_Field_Manytomany',
+                'type' => 'Manytomany',
                 'model' => 'CMS_Content',
                 'is_null' => true,
                 'editable' => false,

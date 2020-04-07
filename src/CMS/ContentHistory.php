@@ -20,14 +20,14 @@ class CMS_ContentHistory extends Pluf_Model
         $this->_a['verbose'] = 'CMS Content History';
         $this->_a['cols'] = array(
             'id' => array(
-                'type' => 'Pluf_DB_Field_Sequence',
+                'type' => 'Sequence',
                 'blank' => false,
                 'is_null' => false,
                 'editable' => false,
                 'readable' => true
             ),
             'action' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'blank' => false,
                 'is_null' => false,
                 'size' => 100,
@@ -35,21 +35,22 @@ class CMS_ContentHistory extends Pluf_Model
                 'readable' => true
             ),
             'workflow' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
-                'blank' => true,
+                'type' => 'Varchar',
+                'is_null' => true,
+                'default' => '',
                 'size' => 100,
                 'editable' => true,
                 'readable' => true
             ),
             'state' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'blank' => true,
                 'size' => 50,
                 'editable' => true,
                 'readable' => true
             ),
             'description' => array(
-                'type' => 'Pluf_DB_Field_Varchar',
+                'type' => 'Varchar',
                 'blank' => true,
                 'is_null' => true,
                 'size' => 250,
@@ -57,7 +58,7 @@ class CMS_ContentHistory extends Pluf_Model
                 'readable' => true
             ),
             'creation_dtime' => array(
-                'type' => 'Pluf_DB_Field_Datetime',
+                'type' => 'Datetime',
                 'blank' => true,
                 'editable' => false,
                 'readable' => true
@@ -66,7 +67,7 @@ class CMS_ContentHistory extends Pluf_Model
              * Relations
              */
             'actor_id' => array(
-                'type' => 'Pluf_DB_Field_Foreignkey',
+                'type' => 'Foreignkey',
                 'model' => 'User_Account',
                 'blank' => true,
                 'is_null' => true,
@@ -77,7 +78,7 @@ class CMS_ContentHistory extends Pluf_Model
                 'readable' => true
             ),
             'content_id' => array(
-                'type' => 'Pluf_DB_Field_Foreignkey',
+                'type' => 'Foreignkey',
                 'model' => 'CMS_Content',
                 'blank' => false,
                 'is_null' => false,
