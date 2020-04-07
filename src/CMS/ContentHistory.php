@@ -36,7 +36,8 @@ class CMS_ContentHistory extends Pluf_Model
             ),
             'workflow' => array(
                 'type' => 'Varchar',
-                'blank' => true,
+                'is_null' => true,
+                'default' => '',
                 'size' => 100,
                 'editable' => true,
                 'readable' => true

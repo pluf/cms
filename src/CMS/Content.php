@@ -86,6 +86,7 @@ class CMS_Content extends Pluf_Model
             'file_path' => array(
                 'type' => 'File',
                 'is_null' => false,
+                'default' => '',
                 'size' => 250,
                 'verbose' => 'File path',
                 'help_text' => 'Content file path',
