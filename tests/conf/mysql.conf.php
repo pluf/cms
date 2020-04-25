@@ -34,12 +34,13 @@ $cfg['template_tags'] = array();
 
 // Must be shared by all the installed_apps and the core framework.
 // That way you can have several installations of the core framework.
-$cfg['db_table_prefix'] = 'cms_unit_tests_';
+$cfg['db_schema_table_prefix'] = 'cms_unit_tests_';
 
 // Starting version 4.1 of MySQL the utf-8 support is "correct".
 // The reason of the db_version for MySQL is only for that.
 $cfg['db_version'] = '5.5.33';
-$cfg['db_engine'] = 'MySQL';
+$cfg['db_engine'] = '\Pluf\Db\MySQLEngine';
+$cfg['db_schema'] = '\Pluf\Db\MySQLSchema';
 
 return $cfg;
 
