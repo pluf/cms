@@ -161,7 +161,7 @@ class CMS_Views extends Pluf_Views
         // Do
         try {
             $response = new Pluf_HTTP_Response_File($content->getAbsloutPath(), $content->mime_type);
-            $response->headers['Content-Disposition'] = sprintf('attachment; filename="%s"', $content->file_name);
+            // $response->headers['Content-Disposition'] = sprintf('attachment; filename="%s"', $content->file_name);
             return $response;
         } finally {
             $content->downloads += 1;
