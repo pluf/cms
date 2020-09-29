@@ -1,6 +1,6 @@
 {
 	"name" : "pluf/cms",
-	"version" : "6.0.12",
+	"version" : "6.0.13",
 	"description" : "Content management system fo pluf",
 	"type" : "library",
 	"license" : "MIT",
