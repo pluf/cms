@@ -68,4 +68,28 @@ class CMS_ContentMeta extends Pluf_Model
             ),
         );
     }
+    
+    /**
+     * Extract information of metafield and returns it.
+     *
+     * @param string $key
+     * @param long $contentId
+     * @return CMS_ContentMeta
+     */
+    public static function getMeta($key, $contentId)
+    {
+        $model = new CMS_ContentMeta();
+        $where = new Pluf_SQL('`key`=%s AND `content_id`=%s', array(
+            $model->_toDb($key, 'key'),
+            $model->_toDb($contentId, 'content_id')
+        ));
+        $metas = $model->getList(array(
+            'filter' => $where->gen()
+        ));
+        if ($metas === false or count($metas) !== 1) {
+            return false;
+        }
+        return $metas[0];
+    }
+    
 }

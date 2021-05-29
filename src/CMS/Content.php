@@ -122,7 +122,7 @@ class CMS_Content extends Pluf_Model
                 'is_null' => true,
                 'size' => 64,
                 'default' => '',
-                'editable' => false
+                'editable' => true
             ),
 //             'manager' => array(
 //                 'type' => 'Varchar',

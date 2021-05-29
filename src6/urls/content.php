@@ -122,8 +122,17 @@ return array(
         'method' => 'actions',
         'http-method' => 'GET'
     ),
-    array( // do action on order
+    array( // do action on content
         'regex' => '#^/contents/(?P<contentId>\d+)/transitions$#',
+        'model' => 'CMS_Views',
+        'method' => 'doAction',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::editorRequired'
+        )
+    ),
+    array( // do action on content (by name)
+        'regex' => '#^/contents/(?P<name>[^/]+)/transitions$#',
         'model' => 'CMS_Views',
         'method' => 'doAction',
         'http-method' => 'POST',
@@ -183,23 +192,17 @@ return array(
             'model' => 'CMS_ContentMeta'
         )
     ),
-    array( // list add
+    array( // Create
         'regex' => '#^/contents/(?P<parentId>\d+)/metas$#',
-        'model' => 'Pluf_Views',
-        'method' => 'createManyToOne',
+        'model' => 'CMS_Views',
+        'method' => 'createOrUpdateMeta',
         'http-method' => 'POST',
         'precond' => array(
             'CMS_Precondition::authorRequired'
-        ),
-        'params' => array(
-            'parent' => 'CMS_Content',
-            'parentKey' => 'content_id',
-            'model' => 'CMS_ContentMeta'
-            // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
         )
     ),
 
-    array( // get item
+    array( // Read
         'regex' => '#^/contents/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
         'model' => 'Pluf_Views',
         'method' => 'getManyToOne',
@@ -209,6 +212,12 @@ return array(
             'parentKey' => 'content_id',
             'model' => 'CMS_ContentMeta'
         )
+    ),
+    array( // Read (by key)
+        'regex' => '#^/contents/(?P<parentId>\d+)/metas/(?P<modelKey>[^/]+)$#',
+        'model' => 'CMS_ContentMeta',
+        'method' => 'getByKey',
+        'http-method' => 'GET'
     ),
     array( // Update item
         'regex' => '#^/contents/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
@@ -228,6 +237,15 @@ return array(
             // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
         )
     ),
+    array( // Update (by key)
+        'regex' => '#^/contents/(?P<parentId>\d+)/metas/(?P<modelKey>[^/]+)$#',
+        'model' => 'CMS_Views',
+        'method' => 'updateMetaByKey',
+        'http-method' => 'POST',
+        'precond' => array(
+            'CMS_Precondition::authorRequired'
+        )
+    ),
     array( // delete item
         'regex' => '#^/contents/(?P<parentId>\d+)/metas/(?P<modelId>\d+)$#',
         'model' => 'Pluf_Views',
@@ -244,6 +262,51 @@ return array(
         )
     ),
 
+    // --------------------------------------------------------------------
+    // Content Meta (by name of content)
+    // --------------------------------------------------------------------
+    array( // Create
+        'regex' => '#^/contents/(?P<name>[^/]+)/metas$#',
+        'model' => 'CMS_Views',
+        'method' => 'createOrUpdateMeta',
+        'http-method' => 'POST'
+    ),
+    array( // Read (list)
+        'regex' => '#^/contents/(?P<name>[^/]+)/metas$#',
+        'model' => 'CMS_Views',
+        'method' => 'findByContentName',
+        'http-method' => 'GET'
+    ),
+    array( // Read
+        'regex' => '#^/contents/(?P<name>[^/]+)/metas/(?P<modelId>\d+)$#',
+        'model' => 'CMS_Views',
+        'method' => 'getByContentName',
+        'http-method' => 'GET'
+    ),
+    array( // Read
+        'regex' => '#^/contents/(?P<name>[^/]+)/metas/(?P<modelKey>[^/]+)$#',
+        'model' => 'CMS_Views',
+        'method' => 'getMetaByKey',
+        'http-method' => 'GET'
+    ),
+    array( // Update
+        'regex' => '#^/contents/(?P<name>[^/]+)/metas/(?P<modelId>\d+)$#',
+        'model' => 'CMS_Views',
+        'method' => 'updateByContentName',
+        'http-method' => 'POST'
+    ),
+    array( // Update (by key)
+        'regex' => '#^/contents/(?P<name>[^/]+)/metas/(?P<modelKey>[^/]+)$#',
+        'model' => 'CMS_Views',
+        'method' => 'updateMetaByKey',
+        'http-method' => 'POST'
+    ),
+    array( // Delete
+        'regex' => '#^/contents/(?P<name>[^/]+)/metas/(?P<modelId>\d+)$#',
+        'model' => 'CMS_Views',
+        'method' => 'deleteByContentName',
+        'http-method' => 'DELETE'
+    ),
     // --------------------------------------------------------------------
     // Content Thumbnail
     // --------------------------------------------------------------------
