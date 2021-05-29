@@ -57,8 +57,10 @@ class CMS_Views extends Pluf_Views
             $content->delete();
             throw $e;
         }
-        $manager = $content->getManager();
-        $manager->apply($content, 'create');
+        if(!array_key_exists('state', $request->REQUEST)){
+            $manager = $content->getManager();
+            $manager->apply($content, 'create');
+        }
         return $content;
     }
 
@@ -314,6 +316,125 @@ class CMS_Views extends Pluf_Views
     }
 
     // ***********************************************************
+    // Meta
+    // **********************************************************
+    
+    public function createOrUpdateMeta($request, $match)
+    {
+        // Extract order id
+        $contentId = self::extractContentId($match);
+        $match['parentId'] = $contentId;
+        $p = array(
+            'parent' => 'CMS_Content',
+            'parentKey' => 'content_id',
+            'model' => 'CMS_ContentMeta'
+            // 'precond' => function($request, $object, $parent) -> {false, true} | throw exception
+        );
+        // Check if metafield exist
+        $metafield = CMS_ContentMeta::getMeta($request->REQUEST['key'], $contentId);
+        if (!$metafield) { // Should be created
+            return $this->createManyToOne($request, $match, $p);
+        } else { // Should be updated
+            $match['modelId'] = $metafield->id;
+            return $this->updateManyToOne($request, $match, $p);
+        }
+    }
+    
+    private static function extractContentId($match)
+    {
+        if (array_key_exists('parentId', $match)) {
+            return $match['parentId'];
+        }
+        if (array_key_exists('name', $match)) {
+            $content = CMS_Shortcuts_GetNamedContentOr404($match['name']);
+            return $content->id;
+        }
+        throw new Pluf_Exception_BadRequest('Not parentId nor name of content is defined');
+    }
+    
+    public static function updateMetaByKey($request, $match)
+    {
+        $metaField = self::getMetaByKey($request, $match);
+        $match['modelId'] = $metaField->id;
+        $match['parentId'] = $metaField->content_id;
+        $p = array(
+            'model' => 'CMS_ContentMeta',
+            'parent' => 'CMS_Content',
+            'parentKey' => 'content_id'
+        );
+        $view = new Pluf_Views();
+        return $view->updateManyToOne($request, $match, $p);
+    }
+    
+    /**
+     * Extract Key of metafield from $match and returns related Metafield
+     *
+     * @param Pluf_HTTP_Request $request
+     * @param array $match
+     * @throws Pluf_Exception_DoesNotExist if Id is given and Metafield with given id does not exist or is not blong to given Product
+     * @return NULL|CMS_ContentMeta
+     */
+    public static function getMetaByKey($request, $match)
+    {
+        if (! isset($match['modelKey'])) {
+            throw new Pluf_Exception_BadRequest('The modelKey is not set');
+        }
+        $contentId = self::extractContentId($match);
+        $metafield = CMS_ContentMeta::getMeta($match['modelKey'], $contentId);
+        if ($metafield === null) {
+            throw new Pluf_HTTP_Error404('Object not found (CMS_ContentMeta,' . $match['modelKey'] . ')');
+        }
+        return $metafield;
+    }
+    
+    public function findByContentName($request, $match)
+    {
+        $contentId = self::extractContentId($match);
+        $match['parentId'] = $contentId;
+        $p = array(
+            'model' => 'CMS_ContentMeta',
+            'parent' => 'CMS_Content',
+            'parentKey' => 'content_id'
+        );
+        return $this->findManyToOne($request, $match, $p);
+    }
+    
+    public function getByContentName($request, $match)
+    {
+        $contentId = self::extractContentId($match);
+        $match['parentId'] = $contentId;
+        $p = array(
+            'model' => 'CMS_ContentMeta',
+            'parent' => 'CMS_Content',
+            'parentKey' => 'content_id'
+        );
+        return $this->getManyToOne($request, $match, $p);
+    }
+    
+    public function updateByContentName($request, $match)
+    {
+        $contentId = self::extractContentId($match);
+        $match['parentId'] = $contentId;
+        $p = array(
+            'model' => 'CMS_ContentMeta',
+            'parent' => 'CMS_Content',
+            'parentKey' => 'content_id'
+        );
+        return $this->updateManyToOne($request, $match, $p);
+    }
+    
+    public function deleteByContentName($request, $match){
+        $contentId = self::extractContentId($match);
+        $match['parentId'] = $contentId;
+        $p = array(
+            'model' => 'CMS_ContentMeta',
+            'parent' => 'CMS_Content',
+            'parentKey' => 'content_id'
+        );
+        return $this->deleteManyToOne($request, $match, $p);
+    }
+    
+    // ***********************************************************
     // Workflow
     // **********************************************************
 
@@ -376,6 +497,29 @@ class CMS_Views extends Pluf_Views
         }
         self::checkAccess($request, $content);
         $action = $request->REQUEST['action'];
+        if($action == 'touch'){
+            // Add canonical link of the content to the sitemap links
+            // find canonical link of the content
+            $canonical = CMS_ContentMeta::getMeta('link.canonical', $content->id);
+            if($canonical){
+                $mainDomain = Pluf_Tenant::getCurrent()->domain;
+                $loc = 'http://' . $mainDomain . $canonical->value;
+                $link = Seo_SitemapLink::getLinkByLoc($loc);
+                if(!$link){
+                    $request->REQUEST['loc'] = $loc;
+                    $request->REQUEST['lastmod'] = gmdate('Y-m-d H:i:s');
+                    $p = array(
+                        'model' => 'Seo_SitemapLink'
+                    );
+                    parent::createObject($request, array(), $p);
+                }else{
+                    // Update last_modif of the sitemap link
+                    $link->lastmod = gmdate('Y-m-d H:i:s');
+                    $link->update();
+                }
+            }
+            return $content;
+        }
         $manager = $content->getManager();
         if ($manager->apply($content, $action, true)) {
             $updatedContent = Pluf_Shortcuts_GetObjectOr404('CMS_Content', $content->id);
@@ -383,6 +527,5 @@ class CMS_Views extends Pluf_Views
         }
         return new \Pluf\Exception('An error is occurred while processing content');
     }
-   
 }
 
